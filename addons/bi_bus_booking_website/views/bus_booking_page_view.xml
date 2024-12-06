@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <template id="bus_booking_website_page" name="Bus Booking Page">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                        <div id="bus_booking_div"><br/>
+                            <section class="s_website_form">
+                                <div class="container s_allow_columns">
+                                    <form id="bus_booking_form">
+                                        <div class="s_website_form_rows row s_col_no_bgcolor">
+                                            <div class="form-group col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field">
+                                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                    <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="start_point">
+                                                        <span class="s_website_form_label_content">Start Point</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <select name="start_point" id="start_point" class="form-control s_website_form_input">
+                                                            <option value="">Start Point</option>
+                                                                <t t-foreach="start_point_ids or []" t-as="start_point_id">
+                                                                    <option t-att-value="start_point_id.id">
+                                                                        <t t-esc="start_point_id.name" />
+                                                                    </option>
+                                                                </t>
+                                                        </select>
+                                                    </div>
+                                                    <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="end_point">
+                                                        <span class="s_website_form_label_content">End Point</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <select name="end_point" id="end_point" class="form-control s_website_form_input">
+                                                            <option value="">End Point</option>
+                                                                <t t-foreach="end_point_ids or []" t-as="end_point_id">
+                                                                    <option t-att-value="end_point_id.id">
+                                                                        <t t-esc="end_point_id.name" />
+                                                                    </option>
+                                                                </t>
+                                                        </select>
+                                                    </div>
+                                                </div><br/>
+                                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                    <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="bus_journey_date">
+                                                        <span class="s_website_form_label_content">Date</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <input name="bus_journey_date" class="form-control s_website_form_input" type="date" id="bus_journey_date_id"/>
+                                                    </div>
+                                                    <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="bus_types">
+                                                        <span class="s_website_form_label_content">Bus Type</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <select name="bus_types" id="bus_types" class="form-control s_website_form_input">
+                                                            <option value="">Bus Type</option>
+                                                                <t t-foreach="bus_types_ids or []" t-as="bus_types_id">
+                                                                    <option t-att-value="bus_types_id.id">
+                                                                        <t t-esc="bus_types_id.name" />
+                                                                    </option>
+                                                                </t>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div><br/>
+                                <div align="center">
+                                    <button type="button" class="btn btn-primary btn-lg oe_button_search" id="button_bus_search">Search</button>
+                                    <button type="button" class="btn btn-primary btn-lg oe_button_clear_search" id="button_bus_clear_search">Clear</button>
+                                </div>
+                            </section>
+                        </div>
+                        <div><br/>
+                            <table style="display:none" id="bus_list_table" class="o_bus_list_table table">
+                                <thead>
+                                <tr>
+                                    <th>Route</th>
+                                    <th>Bus</th>
+                                    <th>Start Point</th>
+                                    <th>End Point</th>
+                                    <th>Bus Type</th>
+                                    <th>Date</th>
+                                    <th>Total Seat</th>
+                                    <th>Remaining Seat</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody class="o_bus_list_body" id="bus_list_body">
+                                </tbody>
+                            </table>
+                        </div>
+                    <div class="oe_structure mt-2"/>
+                </div>
+            </t>
+        </template>
+
+        <template id="bus_booking_website_page_1" name="Bus Booking Page">
+            <t t-call="website.layout">
+                <div id="wrap"  class="oe_structure oe_empty">
+                        <div class="container oe_website_sale pt-2">
+                            <br/><button class="btn btn-primary btn-lg o_show_bus_seat" id="show_bus_seat">Show Bus Seat</button>
+                            <form id="bus_booking_form_seat" action="/bus_detail">
+                            <input name="total_row" type="hidden" id="total_row" t-att-value="total_row"/>
+                            <input name="total_seat_in_single_row" type="hidden" id="total_seat_in_single_row" t-att-value="total_seat_in_single_row"/>
+                            <input name="booked_seat" type="hidden" id="booked_seat" t-att-value="booked_seat"/>
+                            <input name="bus_type" type="hidden" id="bus_type" t-att-value="bus_type"/>
+                            <input name="route_line" type="hidden" id="route_line_id" t-att-value="bus_routes_line_id"/>
+                            <div id="bus_seat_view_div">
+                                <t t-if="bus_type == 'seating'">
+                                    <ul id="bus_seat_view_ul">
+                                    </ul> 
+                                </t>
+                                <t t-if="bus_type == 'sleeper'">
+                                    <ul id="bus_seat_view_sleeper_ul">
+                                    </ul> 
+                                </t>
+                            </div>
+                            <div class="row">
+                                <t t-if="bus_type == 'seating'">
+                                    <ul id="seatDescription">
+                                        <li style="background:url('/bi_bus_booking_website/static/images/available_seat_img.gif') no-repeat scroll 0 0 transparent;">Available Seat</li>
+                                        <li style="background:url('/bi_bus_booking_website/static/images/booked_seat_img.gif') no-repeat scroll 0 0 transparent;">Booked Seat</li>
+                                        <li style="background:url('/bi_bus_booking_website/static/images/selected_seat_img.gif') no-repeat scroll 0 0 transparent;">Selected Seat</li>
+                                    </ul>
+                                </t>
+                                <t t-if="bus_type == 'sleeper'">
+                                    <ul id="seatDescriptionsleeper">
+                                        <li style="background:url('/bi_bus_booking_website/static/images/sleeper1.svg') no-repeat scroll 0 0 transparent;">Available Seat</li>
+                                        <li style="background:url('/bi_bus_booking_website/static/images/s2.svg') no-repeat scroll 0 0 transparent;">Booked Seat</li>
+                                        <li style="background:url('/bi_bus_booking_website/static/images/s3.svg') no-repeat scroll 0 0 transparent;">Selected Seat</li>
+                                    </ul>
+                                </t>
+                                </div>
+                            <div class="row">
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label class="col-form-label" for="pick_up_drop_off_points_1">Pick-up Point</label>
+                                    <select name="pick_up_drop_off_points_1" t-attf-class="form-control" required="">
+                                        <option value="">Pick-up Point...</option>
+                                        <t t-foreach="pick_up_drop_off_points_1 or []" t-as="pick_up_drop_off_points_id">
+                                            <option t-att-value="pick_up_drop_off_points_id.id">
+                                                <t t-esc="pick_up_drop_off_points_id.name" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label class="col-form-label" for="pick_up_drop_off_points_2">Drop off Point</label>
+                                    <select name="pick_up_drop_off_points_2" t-attf-class="form-control" required="">
+                                        <option value="">Drop off Point...</option>
+                                        <t t-foreach="pick_up_drop_off_points_2 or []" t-as="pick_up_drop_off_points_id">
+                                            <option t-att-value="pick_up_drop_off_points_id.id">
+                                                <t t-esc="pick_up_drop_off_points_id.name" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label class="col-form-label" for="price">Price</label><br/>
+                                            <t t-esc="price "/>
+                                </div>
+                                <div t-attf-class="form-group col-xl-6">
+                                    <label class="col-form-label" for="amenities">Amenities</label><br/>
+                                    <t t-if="m2m_bus_amenities_ids">
+                                        <span t-esc="', '.join(m2m_bus_amenities_ids.mapped('name'))"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div><br/>
+                            <table id="bus_customer_table" style="display:none" class="table o_bus_list_table" >
+                                <thead>
+                                    <tr>
+                                        <th>Seat No</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Phone Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="o_bus_list_body" id="bus_list_body" name="bus_list_body">
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" style="display:none" name="button_checkout" id="button_checkout" class="btn btn-primary btn-lg oe_check_out">Checkout</button>
+                        </form>
+                        </div>
+                    <div class="oe_structure mt-2"/>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

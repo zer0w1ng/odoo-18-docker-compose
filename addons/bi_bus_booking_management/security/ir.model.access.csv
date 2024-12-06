@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bus_types,access_bus_types,model_bus_types,base.group_user,1,1,1,1
+access_bus_brand,access_bus_brand,model_bus_brand,base.group_user,1,1,1,1
+access_pickup_dropoff_points,access_pickup_dropoff_points,model_pickup_dropoff_points,base.group_user,1,1,1,1
+access_bus_point,access_bus_point,model_bus_point,base.group_user,1,1,1,1
+access_bus_routes,access_bus_routes,model_bus_routes,base.group_user,1,1,1,1
+access_bus_routes_line,access_bus_routes_line,model_bus_routes_line,base.group_user,1,1,1,1
+access_bus_amenities,access_bus_amenities,model_bus_amenities,base.group_user,1,1,1,1
+access_bus_booking,access_bus_booking,model_bus_booking,base.group_user,1,1,1,1
+access_bus_book_seat,access_bus_book_seat,model_bus_book_seat,base.group_user,1,1,1,1
+access_trip_information,access_trip_information,model_trip_information,base.group_user,1,1,1,1
+access_trip_information_line,access_trip_information_line,model_trip_information_line,base.group_user,1,1,1,1

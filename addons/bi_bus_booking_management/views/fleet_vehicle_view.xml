@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_fleet_vehicle_view_form" model="ir.ui.view">
+        <field name="name">fleet.vehicle.form</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Other Info" id="page_bus_other_info">
+                    <group>
+                        <field name="m2o_bus_brand_id" required="1"/>
+                        <field name="m2o_bus_types_id" required="1"/>
+                        <field name="m2m_bus_amenities_ids"
+                                widget="many2many_tags"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_bus_details" model="ir.actions.act_window">
+        <field name="name">Buses</field>
+        <field name="res_model">fleet.vehicle</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+    </record>
+
+    <menuitem name="Bus Booking Management"
+              id="root_bus_booking_management_menu"
+              groups="bi_bus_booking_management.bus_booking_groups"
+              sequence="1"/>
+
+    <menuitem name="Buses"
+              id="root_buses_menu"
+              parent="root_bus_booking_management_menu"
+              sequence="5"/>
+
+    <menuitem name="Buses"
+              id="buses_menu"
+              parent="root_buses_menu"
+              action="action_bus_details"
+              sequence="10"/>
+</odoo>

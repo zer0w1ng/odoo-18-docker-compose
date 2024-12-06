@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_brand_tree" model="ir.ui.view">
+        <field name="name">bus.brand.list</field>
+        <field name="model">bus.brand</field>
+        <field name="arch" type="xml">
+            <list string="Bus Brand">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bus_brand_form" model="ir.ui.view">
+        <field name="name">bus.brand.form</field>
+        <field name="model">bus.brand</field>
+        <field name="arch" type="xml">
+            <form string="Bus Brand">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_brand" model="ir.actions.act_window">
+        <field name="name">Bus Brand</field>
+        <field name="res_model">bus.brand</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Brand"
+              id="bus_brand_menu"
+              parent="root_configuration_menu"
+              action="action_bus_brand"
+              sequence="110"/>
+</odoo>

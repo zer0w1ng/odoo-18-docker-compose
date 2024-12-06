@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_amenities_tree" model="ir.ui.view">
+        <field name="name">bus.amenities.list</field>
+        <field name="model">bus.amenities</field>
+        <field name="arch" type="xml">
+            <list string="Bus Amenities">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bus_amenities_form" model="ir.ui.view">
+        <field name="name">bus.amenities.form</field>
+        <field name="model">bus.amenities</field>
+        <field name="arch" type="xml">
+            <form string="Bus Amenities">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_amenities" model="ir.actions.act_window">
+        <field name="name">Bus Amenities</field>
+        <field name="res_model">bus.amenities</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Amenities"
+              id="bus_amenities_menu"
+              parent="root_configuration_menu"
+              action="action_bus_amenities"
+              sequence="125"/>
+</odoo>

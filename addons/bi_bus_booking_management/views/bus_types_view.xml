@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_types_tree" model="ir.ui.view">
+        <field name="name">bus.types.list</field>
+        <field name="model">bus.types</field>
+        <field name="arch" type="xml">
+            <list string="Bus Types">
+                <field name="name"/>
+                <field name="bus_type"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bus_types_form" model="ir.ui.view">
+        <field name="name">bus.types.form</field>
+        <field name="model">bus.types</field>
+        <field name="arch" type="xml">
+            <form string="Bus Types">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                        <field name="bus_type" required="1"/>
+                        <field name="total_row" required="1"/>
+                        <field name="total_seat_in_single_row" required="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_types" model="ir.actions.act_window">
+        <field name="name">Bus Types</field>
+        <field name="res_model">bus.types</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Configuration"
+              id="root_configuration_menu"
+              parent="root_bus_booking_management_menu"
+              sequence="100"/>
+
+    <menuitem name="Types"
+              id="bus_types_menu"
+              parent="root_configuration_menu"
+              action="action_bus_types"
+              sequence="105"/>
+</odoo>

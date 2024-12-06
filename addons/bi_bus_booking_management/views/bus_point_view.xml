@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_point_tree" model="ir.ui.view">
+        <field name="name">bus.point.list</field>
+        <field name="model">bus.point</field>
+        <field name="arch" type="xml">
+            <list string="Bus Point">
+                <field name="name"/>
+                <field name="m2m_pickup_dropoff_points_ids"
+                        widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bus_point_form" model="ir.ui.view">
+        <field name="name">bus.point.form</field>
+        <field name="model">bus.point</field>
+        <field name="arch" type="xml">
+            <form string="Bus Point">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                        <field name="m2m_pickup_dropoff_points_ids"
+                               required="1"
+                               widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_point" model="ir.actions.act_window">
+        <field name="name">Bus Point</field>
+        <field name="res_model">bus.point</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Bus Point"
+              id="bus_point_menu"
+              parent="root_configuration_menu"
+              action="action_bus_point"
+              sequence="120"/>
+</odoo>

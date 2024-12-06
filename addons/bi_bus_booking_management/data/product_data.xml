@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="bus_ticket_product" model="product.product">
+            <field name="name">Bus Ticket</field>
+            <field name="type">service</field>
+            <field name="invoice_policy">order</field>
+        </record>
+    </data>
+</odoo>

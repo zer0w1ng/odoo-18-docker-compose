@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pickup_dropoff_points_tree" model="ir.ui.view">
+        <field name="name">pickup.dropoff.points.list</field>
+        <field name="model">pickup.dropoff.points</field>
+        <field name="arch" type="xml">
+            <list string="Pick-up Drop off Points">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pickup_dropoff_points_form" model="ir.ui.view">
+        <field name="name">pickup.dropoff.points.form</field>
+        <field name="model">pickup.dropoff.points</field>
+        <field name="arch" type="xml">
+            <form string="Pick-up Drop off Points">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pickup_dropoff_points" model="ir.actions.act_window">
+        <field name="name">Pick-up Drop off Points</field>
+        <field name="res_model">pickup.dropoff.points</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Pick-up Drop off Points"
+              id="pickup_dropoff_points_menu"
+              parent="root_configuration_menu"
+              action="action_pickup_dropoff_points"
+              sequence="115"/>
+</odoo>

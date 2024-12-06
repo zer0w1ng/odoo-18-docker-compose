@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_book_seat_form" model="ir.ui.view">
+        <field name="name">bus.book.seat.form</field>
+        <field name="model">bus.book.seat</field>
+        <field name="arch" type="xml">
+            <form string="Bus Book Seat" js_class="bus_book_seat">
+                    <group>
+                        <field name="m2o_fleet_vehicle_id" required="1" invisible="1" class="o_m2o_fleet_vehicle_id"/>
+                    </group>
+                <footer>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_book_seat" model="ir.actions.act_window">
+        <field name="name">Bus Book Seat</field>
+        <field name="res_model">bus.book.seat</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_booking_form" model="ir.ui.view">
+        <field name="name">bus.booking.form</field>
+        <field name="model">bus.booking</field>
+        <field name="arch" type="xml">
+            <form string="Bus Booking">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="m2o_bus_point_pickup_id" required="1"/>
+                            <field name="m2o_bus_point_dropoff_id" required="1"
+                                   domain="([('id', '!=', m2o_bus_point_pickup_id)])"/>
+                        </group>
+                        <group>
+                            <field name="m2o_bus_types_id" required="1"/>
+                            <field name="journey_date" required="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="button_search_buses" id="search_buses_id"
+                                string="Search" type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_booking" model="ir.actions.act_window">
+        <field name="name">Bus Booking</field>
+        <field name="res_model">bus.booking</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem name="Bus Booking"
+              id="root_bus_booking"
+              parent="root_bus_booking_management_menu"
+              action="action_bus_booking"
+              sequence="15"/>
+</odoo>

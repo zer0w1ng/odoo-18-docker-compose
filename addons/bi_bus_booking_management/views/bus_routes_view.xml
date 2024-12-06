@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_bus_routes" model="ir.sequence">
+        <field name="name">Bus Routes</field>
+        <field name="code">bus.routes</field>
+        <field name="prefix">RO</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="view_bus_routes_tree" model="ir.ui.view">
+        <field name="name">bus.routes.list</field>
+        <field name="model">bus.routes</field>
+        <field name="arch" type="xml">
+            <list string="Routes">
+                <field name="name"/>
+                <field name="m2o_fleet_vehicle_id"/>
+                <field name="m2o_bus_point_pickup_id"/>
+                <field name="m2o_bus_point_dropoff_id"/>
+                <field name="journey_date"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bus_routes_form" model="ir.ui.view">
+        <field name="name">bus.routes.form</field>
+        <field name="model">bus.routes</field>
+        <field name="arch" type="xml">
+            <form string="Routes">
+                <sheet>
+                    <div class="oe_title" id="bus_routes_name">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="m2o_fleet_vehicle_id" required="1"/>
+                            <field name="m2o_bus_point_pickup_id" required="1"/>
+                            <field name="m2o_bus_point_dropoff_id"
+                                   required="1"
+                                   domain="([('id', '!=', m2o_bus_point_pickup_id)])"/>
+                        </group>
+                        <group>
+                            <field name="journey_date" required="1"/>
+                            <field name="start_time" required="1"/>
+                            <field name="end_time" required="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Routes" id="routes_line">
+                            <field name="bus_routes_line_ids">
+                                <list editable="bottom">
+                                <field name="m2o_bus_point_pickup_id"
+                                       required="1"/>
+                                <field name="m2o_bus_point_dropoff_id"
+                                       domain="([('id', '!=', m2o_bus_point_pickup_id)])"
+                                       required="1"/>
+                                <field name="start_time"
+                                       required="1"/>
+                                <field name="end_time"
+                                       required="1"/>
+                                <field name="price" sum="Total"/>
+                            </list>
+                        </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bus_routes" model="ir.actions.act_window">
+        <field name="name">Routes</field>
+        <field name="res_model">bus.routes</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Routes"
+              id="bus_routes_menu"
+              parent="root_bus_booking_management_menu"
+              action="action_bus_routes"
+              sequence="20"/>
+</odoo>

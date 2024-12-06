@@ -1,0 +1,90 @@
+#bus_seat_view_div{    
+    margin-left:50px;
+}
+#bus_seat_view_ul {
+    position:relative;
+    margin:100px;
+}
+#bus_seat_view_ul a{
+    margin:-15px;
+    font-size:0.9em;
+}
+#bus_seat_view_ul li
+{
+    list-style: none outside none;
+    position: absolute;   
+}    
+#bus_seat_view_ul li:hover
+{
+    background-color:#D8BFD8;      
+} 
+#bus_seat_view_ul .seat{
+    background:url("/bi_bus_booking_website/static/images/available_seat_img.gif") no-repeat scroll 0 0 transparent;
+    height:33px;
+    width:33px;
+    display:block;   
+}
+#bus_seat_view_ul .selectedSeat
+{ 
+    background-image:url("/bi_bus_booking_website/static/images/booked_seat_img.gif");          
+}
+#bus_seat_view_ul .selectingSeat
+{ 
+    background-image:url("/bi_bus_booking_website/static/images/selected_seat_img.gif");        
+}
+#bus_seat_view_ul .row-2, #bus_seat_view_ul .row-3{
+    margin-top:20px;
+}
+#bus_seat_view_ul .row-4, #bus_seat_view_ul .row-5{
+    margin-top:20px;
+}
+#seatDescription li{
+verticle-align:middle;    
+list-style: none outside none;
+padding-left:35px;
+height:35px;
+}
+
+
+#seatDescriptionsleeper li{
+verticle-align:middle;    
+list-style: none outside none;
+padding-left:70px;
+height:35px;
+}
+
+#bus_seat_view_sleeper_ul {
+    position:absolute;
+    margin:49px;
+}
+#bus_seat_view_sleeper_ul li
+{
+    list-style: none outside none;
+    position: absolute;   
+}    
+#bus_seat_view_sleeper_ul li:hover
+{
+    background-color:#D8BFD8;      
+} 
+
+#bus_seat_view_sleeper_ul .seat{
+    background:url("/bi_bus_booking_website/static/images/sleeper1.svg") no-repeat scroll 0 0 transparent;
+    height:33px;
+    width:70px;
+    display:block; 
+max-width: 1000%;  
+}
+#bus_seat_view_sleeper_ul .selectedSeat
+{ 
+    background-image:url("/bi_bus_booking_website/static/images/s2.svg");          
+}
+#bus_seat_view_sleeper_ul .selectingSeat
+{ 
+    background-image:url("/bi_bus_booking_website/static/images/s3.svg");        
+}
+#bus_seat_view_sleeper_ul .row-2, #bus_seat_view_sleeper_ul .row-3{
+    margin-top:20px;
+}
+#bus_seat_view_sleeper_ul .row-4, #bus_seat_view_sleeper_ul .row-5{
+    margin-top:20px;
+}

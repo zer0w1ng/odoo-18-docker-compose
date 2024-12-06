@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_ticket_confirmation" model="mail.template">
+        <field name="name">Ticket: Confirmation Email</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">{{ object.company_id.name }} (Ref {{ object.name or 'n/a' }})</field>
+        <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                    Hello,
+                    <br/><br/>
+                    <t t-set="transaction" t-value="object.get_portal_last_transaction()"/>
+                    Your ticket  <strong t-out="object.name or ''"></strong> amounting in <strong t-out="format_amount(object.amount_total, object.currency_id) or ''"></strong>
+                    <t t-if="object.state == 'sale' or (transaction and transaction.state in ('done', 'authorized'))">
+                        has been confirmed.<br/>
+                        Thank you for your trust!
+                    </t>
+                     <t t-elif="transaction and transaction.state == 'pending'">
+                        is pending. It will be confirmed when the payment is received.
+                        <t t-if="object.reference">
+                            Your payment reference is <strong t-out="object.reference or ''"></strong>.
+                        </t>
+                    </t>
+                    <br/><br/>
+                    Do not hesitate to contact us if you have any questions.
+                    <br/><br/>
+                </p>
+            </div>
+        </field>
+        <field name="report_template_ids" eval="[(4, ref('bi_bus_booking_management.action_report_ticket'))]"/>
+        <field name="lang">{{ object.partner_id.lang }}</field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inherit_view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="bus_details_page" string="Bus Details"
+                      invisible="not is_bus_order"
+                      groups="bi_bus_booking_management.bus_booking_groups">
+                    <group>
+                        <group string="Pick-up and Drop-off Detail">
+                            <field name="m2o_bus_point_pickup_id"/>
+                            <field name="m2o_bus_point_dropoff_id"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                        </group>
+                        <group string="Journy Detail">
+                            <field name="trip_information_id"/>
+                            <field name="journey_date"/>
+                            <field name="m2o_bus_start_point_id"/>
+                            <field name="m2o_bus_end_point_id"/>
+                            <field name="point_start_time"/>
+                            <field name="point_end_time"/>
+                            <field name="is_bus_order" invisible="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//list//field[@name='name']" position="after">
+                <field name="seat_number" column_invisible="not parent.is_bus_order"
+                       groups="bi_bus_booking_management.bus_booking_groups"/>
+                <field name="customer_name" column_invisible="not parent.is_bus_order"
+                       groups="bi_bus_booking_management.bus_booking_groups"/>
+                <field name="email" column_invisible="not parent.is_bus_order"
+                       groups="bi_bus_booking_management.bus_booking_groups"/>
+                <field name="age" column_invisible="not parent.is_bus_order"
+                       groups="bi_bus_booking_management.bus_booking_groups"/>
+                <field name="gender" column_invisible="not parent.is_bus_order"
+                       groups="bi_bus_booking_management.bus_booking_groups"/>
+                <field name="number" column_invisible="not parent.is_bus_order"
+                       groups="bi_bus_booking_management.bus_booking_groups"/>
+                <field name="bus_routes_line_id" column_invisible="1"/>
+                <field name="status_booking" column_invisible="not parent.is_bus_order" groups="bi_bus_booking_management.bus_booking_groups" readonly="1" force_save="1"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="button_register_payment" string="Register Payment"
+                        type="object" invisible="not is_bus_order or invoice_count != 0"
+                        groups="bi_bus_booking_management.bus_booking_groups"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_bus_tickets" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,kanban,form,calendar,pivot,graph</field>
+        <field name="domain">[('is_bus_order', '=', True)]</field>
+    </record>
+
+    <menuitem name="Tickets"
+              id="bus_tickets"
+              parent="root_bus_booking_management_menu"
+              action="action_bus_tickets"
+              sequence="18"/>
+</odoo>

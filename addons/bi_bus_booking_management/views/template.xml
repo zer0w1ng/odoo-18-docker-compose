@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<odoo>
+	<template id="bus_book_seat" name="Bus Book Seat">
+		<div class="js_product1 main_product1 bus_book_seat" style="margin:10px;">
+			<br/>
+			<button class="btn btn-primary btn-lg o_show_bus_seat" id="show_bus_seat" type="button" aria-label="Accept" title="Accept">
+				Show Bus Seat
+			</button>
+			<form id="bus_booking_form_seat" action="/bus_booking_confirm">
+				<input name="total_row" type="hidden" id="total_row" t-att-value="total_row"/>
+				<input name="total_seat_in_single_row" type="hidden" id="total_seat_in_single_row" t-att-value="total_seat_in_single_row"/>
+				<input name="booked_seat" type="hidden" id="booked_seat" t-att-value="booked_seat"/>
+				<input name="bus_type" type="hidden" id="bus_type" t-att-value="bus_type"/>
+				<input name="route_line" type="hidden" id="route_line_id" t-att-value="bus_routes_line_id"/>
+				<div id="bus_seat_view_div">
+					<t t-if="bus_type == 'seating'">
+						<ul id="bus_seat_view_ul">
+						</ul> 
+					</t>
+					<t t-if="bus_type == 'sleeper'">
+						<ul id="bus_seat_view_sleeper_ul">
+						</ul> 
+					</t>
+				</div>
+				<div class="row">
+					<t t-if="bus_type == 'seating'">
+						<ul id="seatDescription">
+							<li style="background:url('/bi_bus_booking_management/static/img/available_seat_img.gif') no-repeat scroll 0 0 transparent;">Available Seat</li>
+							<li style="background:url('/bi_bus_booking_management/static/img/booked_seat_img.gif') no-repeat scroll 0 0 transparent;">Booked Seat</li>
+							<li style="background:url('/bi_bus_booking_management/static/img/selected_seat_img.gif') no-repeat scroll 0 0 transparent;">Selected Seat</li>
+						</ul>
+							</t>
+							<t t-if="bus_type == 'sleeper'">
+						<ul id="seatDescriptionsleeper">
+							<li style="background:url('/bi_bus_booking_management/static/img/sleeper1.svg') no-repeat scroll 0 0 transparent;">Available Seat</li>
+							<li style="background:url('/bi_bus_booking_management/static/img/s2.svg') no-repeat scroll 0 0 transparent;">Booked Seat</li>
+							<li style="background:url('/bi_bus_booking_management/static/img/s3.svg') no-repeat scroll 0 0 transparent;">Selected Seat</li>
+						</ul>
+					</t>
+				</div>
+				<div class="row">
+					<div t-attf-class="form-group col-xl-6">
+						<label class="col-form-label" for="pick_up_drop_off_points_1"><b>Pick-up Point</b></label>
+						<select name="pick_up_drop_off_points_1" t-attf-class="form-control" required="">
+							<option value="">Pick-up Point...</option>
+							<t t-foreach="pick_up_drop_off_points_1 or []" t-as="pick_up_drop_off_points_id">
+								<option t-att-value="pick_up_drop_off_points_id.id">
+									<t t-esc="pick_up_drop_off_points_id.name" />
+								</option>
+							</t>
+						</select>
+					</div>
+					<div t-attf-class="form-group col-xl-6">
+						<label class="col-form-label" for="pick_up_drop_off_points_2"><b>Drop off Point</b></label>
+						<select name="pick_up_drop_off_points_2" t-attf-class="form-control" required="">
+							<option value="">Drop off Point...</option>
+							<t t-foreach="pick_up_drop_off_points_2 or []" t-as="pick_up_drop_off_points_id">
+								<option t-att-value="pick_up_drop_off_points_id.id">
+									<t t-esc="pick_up_drop_off_points_id.name" />
+								</option>
+							</t>
+						</select>
+					</div>
+					<div t-attf-class="form-group col-xl-6">
+						<label class="col-form-label" for="price"><b>Price</b></label><br/>
+								<t t-esc="price "/>
+					</div>
+					<div t-attf-class="form-group col-xl-6">
+						<label class="col-form-label" for="amenities"><b>Amenities</b></label><br/>
+						<t t-if="m2m_bus_amenities_ids">
+							<span t-esc="', '.join(m2m_bus_amenities_ids.mapped('name'))"/>
+						</t>
+					</div>
+				</div>
+				<div><br/>
+				<table id="bus_customer_table" style="display:none;width:100%" class="table table-sm o_bus_list_table">
+					<thead>
+						<tr>
+							<th>Seat No</th>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Age</th>
+							<th>Gender</th>
+							<th>Phone Number</th>
+						</tr>
+					</thead>
+					<tbody class="o_bus_list_body" id="bus_list_body" name="bus_list_body" style="width:100%">
+					</tbody>
+				</table>
+			</div>
+			<button type="submit" style="display:none" name="button_checkout" id="button_checkout" class="btn btn-primary btn-lg oe_check_out">Checkout</button>
+		</form>
+		</div>
+	</template>
+</odoo>

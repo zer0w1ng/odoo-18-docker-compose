@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_trip_info" model="ir.sequence">
+        <field name="name">Bus Routes</field>
+        <field name="code">trip.information</field>
+        <field name="prefix">TI</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="view_trip_information_tree" model="ir.ui.view">
+        <field name="name">trip.information.list</field>
+        <field name="model">trip.information</field>
+        <field name="arch" type="xml">
+            <list string="Trip Information" create="0" edit="0">
+                <field name="name"/>
+                <field name="bus_routes_id"/>
+                <field name="m2o_fleet_vehicle_id"/>
+                <field name="m2o_bus_point_pickup_id"/>
+                <field name="m2o_bus_point_dropoff_id"/>
+                <field name="journey_date"/>
+                <field name="start_time" optional="hide"/>
+                <field name="end_time" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_trip_information_form" model="ir.ui.view">
+        <field name="name">trip.information.form</field>
+        <field name="model">trip.information</field>
+        <field name="arch" type="xml">
+            <form string="Trip Information" create="0" edit="0">
+                <sheet>
+                    <div class="oe_title" id="trip_information_name">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="bus_routes_id" required="1"/>
+                            <field name="m2o_fleet_vehicle_id" required="1"/>
+                            <field name="m2o_bus_point_pickup_id"/>
+                            <field name="m2o_bus_point_dropoff_id"/>
+                        </group>
+                        <group>
+                            <field name="journey_date" required="1"/>
+                            <field name="start_time" required="1"/>
+                            <field name="end_time" required="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Trip Information Line" id="ti_line">
+                            <field name="trip_information_line_ids">
+                                <list editable="bottom">
+                                <field name="seat_number"
+                                       required="1" optional="show"/>
+                                <field name="customer_name"
+                                       required="1" optional="show"/>
+                                <field name="email"
+                                       required="1" optional="show"/>
+                                <field name="age"
+                                       required="1" optional="hide"/>
+                                <field name="gender"
+                                       required="1" optional="hide"/>
+                                <field name="number"
+                                       required="1" optional="hide"/>
+                                <field name="m2o_bus_point_pickup_id"
+                                       required="1" optional="show"/>
+                                <field name="m2o_bus_point_dropoff_id"
+                                       required="1" optional="show"/>
+                                <field name="is_booked" optional="show"/>
+                                <field name="booking_status" column_invisible="True"/>
+
+                                <field name="start_time"
+                                       required="1" optional="hide"/>
+                                <field name="end_time"
+                                       required="1" optional="hide"/>
+                                <button name="button_cancel_ticket" string="Cancel"
+                                        type="object" invisible="not is_booked"/>
+                            </list>
+                            </field>
+                        </page>
+                        <page string="Seat" id="seat_page">
+                            <group>
+                                <field name="total_seat"/>
+                                <field name="booked_seat"/>
+                                <field name="remaining_seat"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_trip_information" model="ir.actions.act_window">
+        <field name="name">Trip Information</field>
+        <field name="res_model">trip.information</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem name="Trip Information"
+              id="trip_information_menu"
+              parent="root_bus_booking_management_menu"
+              action="action_trip_information"
+              sequence="15"/>
+</odoo>

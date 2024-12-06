@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_bus_routes_line_tree" model="ir.ui.view">
+        <field name="name">bus.routes.line.list</field>
+        <field name="model">bus.routes.line</field>
+        <field name="arch" type="xml">
+            <list string="Routes">
+                <field name="m2o_bus_routes_id"/>
+                <field name="m2o_fleet_vehicle_id"/>
+                <field name="m2o_bus_point_pickup_id"/>
+                <field name="m2o_bus_point_dropoff_id"/>
+                <field name="m2o_bus_types_id"/>
+                <field name="journey_date" string="Date"/>
+                <field name="total_seat"/>
+                <field name="remaining_seat"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+                <button string="Book" type="object"
+                        class="btn-primary" name="button_book"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>
