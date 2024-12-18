@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<t t-name="dark_mode_knk.SystrayItem">
+    <div>
+        <a class="o_web_studio_navbar_item d-none d-md-inline-block" 
+           t-on-click.prevent="_onClick" 
+           aria-haspopup="true" 
+           aria-expanded="false" 
+           role="button" 
+           title="Toggle Dark/Light Mode">
+            <button aria-label="Toggle Dark/Light Mode" class="o_nav_entry">
+                <i id="moon_button" class="fa fa-moon-o" role="img" 
+                   t-attf-class="fa fa-moon-o #{this.state.color_scheme == 'dark' ? 'd-none' : ''}" />
+                <i id="sun_button" class="fa fa-sun-o " role="img" t-attf-class="fa fa-sun-o #{this.state.color_scheme == 'light' ? 'd-none' : ''}" />
+            </button>
+        </a>
+    </div>
+</t>
