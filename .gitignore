@@ -4,4 +4,5 @@ etc/addons/
 etc/sessions/
 etc/filestore/
 etc/odoo.conf
-
+*.pyc
+*.log
