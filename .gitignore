@@ -1,4 +1,6 @@
 postgresql/
+OpenUpgrade/
+ez_addons/
 etc/odoo-server.log
 etc/addons/
 etc/sessions/
