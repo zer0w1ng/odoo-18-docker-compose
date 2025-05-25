@@ -2,7 +2,7 @@ from __future__ import print_function
 #from odoo_connection import OdooConnection
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from pprint import pprint
+from pprint import pprint, pformat
 import odoorpc
 import math
 import random
@@ -12,13 +12,11 @@ import os, time
 #from multiprocess import multi_load, chunks, MultiProcess, lprint
 #from odoo_utils import *
 
-def create_demo_attendance(odoo):
-    model = odoo.env["hr.attendance"]
-    res = model.create_demo_data()
-    print(res)
 
+def create_demo_timekeeping(odoo, setting):
+    if not setting['create_timekeeping']:
+        return
 
-def create_demo_timekeeping(odoo):
     model = odoo.env["ez.shift"]
     header = ['id', 'name', 'default_schedule', 'auto_auth']
     data = [
@@ -50,13 +48,13 @@ def create_demo_timekeeping(odoo):
     TimeCard.unlink(ids)
     print("Timecard Deleted:", ids)
 
-    date_end = datetime.strptime("2025-05-01","%Y-%m-%d")
-    months = 24
+    months = setting["months"]
+    date_end = datetime.today() \
+        .replace(day=1, hour=0, minute=0, second=0, microsecond=0) 
     d1 = date_end.replace(day=1) - relativedelta(months=months)
+    d2 = d1 + relativedelta(months=months, days=-1)
 
     employee_ids = Employee.browse(Employee.search([]))
-
-    d2 = d1 + relativedelta(months=months, days=-1)
     new_recs = []
     for e in employee_ids:
         dd1 = d1
@@ -109,7 +107,7 @@ def create_demo_timekeeping(odoo):
     for rec in new_recs:
         id = TimeCard.create(rec)
         ids.append(id)
-        print(" create tc: ", id, pprint.pformat(rec))
+        print(" create tc: ", id, pformat(rec))
 
     TimeCard.gen_default_lines(ids)
     print(" gen_default_lines: ", ids)
@@ -119,15 +117,24 @@ def create_demo_timekeeping(odoo):
     print(" approve_record: ", ids)
 
 
-def create_demo_payroll_rate(odoo):
+def create_demo_payroll_rate(odoo, setting):
+    if not setting['create_payroll_rate']:
+        return
+
     # date_start = datetime.strptime("2022-08-01","%Y-%m-%d")
     # date_end = datetime.strptime("2024-05-16","%Y-%m-%d")
     Rates = odoo.env["ez.employee.salary.rate"]
     ids = Rates.search([])
     Rates.unlink(ids)
 
-    date_start = datetime.strptime("2023-04-01","%Y-%m-%d")
-    date_end = datetime.strptime("2025-04-30","%Y-%m-%d")
+    months = setting["months"]
+    date_end = datetime.today() \
+        .replace(day=1, hour=0, minute=0, second=0, microsecond=0) \
+        - relativedelta(days=30)
+    date_start = date_end.replace(day=1) - relativedelta(months=months+1)
+
+    # date_start = datetime.strptime("2023-04-01","%Y-%m-%d")
+    # date_end = datetime.strptime("2025-04-30","%Y-%m-%d")
 
     # create increasing salary rate every 3 months
     employees = odoo.env["hr.employee"].search_read([], ['salary_rate', 'name'])
@@ -153,10 +160,19 @@ def create_demo_payroll_rate(odoo):
         d0 += relativedelta(months=3)
 
 
-def create_demo_payroll(odoo):
+def create_demo_payroll(odoo, setting):
+    if not setting['create_payroll']:
+        return
+
     model = odoo.env["hr.ph.payroll"]
-    date_start = datetime.strptime("2023-04-01","%Y-%m-%d")
-    date_end = datetime.strptime("2025-04-30","%Y-%m-%d")
+    months = setting["months"]
+    date_end = datetime.today() \
+        .replace(day=1, hour=0, minute=0, second=0, microsecond=0) \
+        - relativedelta(days=1)
+    date_start = date_end.replace(day=1) - relativedelta(months=months)
+
+    # date_start = datetime.strptime("2023-04-01","%Y-%m-%d")
+    # date_end = datetime.strptime("2025-04-30","%Y-%m-%d")
 
     #delete all payroll
     ids = model.search([])
@@ -176,7 +192,6 @@ def create_demo_payroll(odoo):
         name = d0.strftime("Payroll %B %Y B")
         print("Create Payroll:", name, dd0, dd1)
         res = model.create_demo_data(name, dd0, dd1, True)
-
         d0 += relativedelta(months=1)
 
 
@@ -190,62 +205,136 @@ def delete_demo_payroll(odoo):
     print("Delete", res)
     print()
 
-    if 1:
+    if 0:
         model = odoo.env["ez.employee.salary.rate"]
         ids = model.search([])
         print("Delete Rate:", ids)
         res = model.unlink(ids)
         print("Delete", res)
 
+def get_odoo_connection(settings):
+    odoo = odoorpc.ODOO(
+        settings['host'],
+        port=settings['port'],
+        protocol=settings['protocol'],
+    )
+    odoo.login(settings['dbname'], settings['user'], settings['admin_pwd'])
+    return odoo
+
+####################################################
+
+def create_demo_employees(odoo, setting):
+    if setting['create_employees']:
+        Employee = odoo.env['hr.employee']
+        res = Employee.demo_create_employee(setting['hired'])
+        admin_id = Employee.search([('name', '=', 'Administrator')], limit=1)
+        if admin_id:
+            Employee.write(admin_id, {
+                'last_name': 'Doe',
+                'first_name': 'Johnny Admin',
+                'middle_name': 'Cruz',
+            })
+        ids = Employee.search([])
+        Employee.write(ids, {
+            'tz': 'Asia/Manila',
+        })
+        print(f"Create employees: {pformat(res)}")
+
+
+def create_demo_attendance(odoo, setting):
+    if setting['create_attendance']:
+        Attendance = odoo.env["hr.attendance"]
+        Employee = odoo.env['hr.employee']
+
+        #delete all attendance
+        ids = Attendance.search([])
+        Attendance.unlink(ids)
+
+        months = setting['months']
+        d1 = datetime.today() \
+            .replace(day=1, hour=0, minute=0, second=0, microsecond=0) \
+            - relativedelta(months=months)
+        d2 = d1 + relativedelta(months=months+1)
+        sd1 = d1.strftime('%Y-%m-%d')
+        sd2 = d2.strftime('%Y-%m-%d')
+        print("Create Attendance from", sd1, "to", sd2)
+
+        employee_ids = Employee.search_read([], ['id', 'name'])
+        TIMEZONE_ADJUSTMENT = relativedelta(hours=8)
+
+        header = [
+            'id', 'employee_id', 'check_in', 'check_out',
+        ]
+
+        i = 0
+        while d1<=d2:
+            data = []
+            for e in employee_ids:
+                id = f"__import__.attendance_line_{d1.strftime('%Y%m%d')}_{i}"
+                i += 1
+
+                chance = 1
+                if d1.weekday()==6:
+                    #1 day of a month will work on a day-off
+                    chance = random.randrange(1, 31)
+
+                if chance==1:
+                    dd1 = datetime.combine(d1, datetime.min.time()).replace(hour=8, minute=0)
+                    #dd1 -= TIMEZONE_ADJUSTMENT
+                    dd2 = dd1 + relativedelta(hours=9)
+
+                    #with late
+                    late = random.randrange(1, 6)
+                    if late==1:
+                        dd1 += relativedelta(minutes=random.randrange(1, 20))
+
+                    #with ot
+                    ot = random.randrange(1, 6)
+                    if ot==1:
+                        dd2 += relativedelta(minutes=random.randrange(10, 120))
+
+                data.append([
+                    id,
+                    e['name'],
+                    f"{dd1}",
+                    f"{dd2}",
+                ])
+
+            d1 += relativedelta(days=1)
+
+            print()
+            print(header)
+            for d in data:
+                pprint(d)
+            res = Attendance.load(header, data)
+            pprint(res)
+
+SETTINGS = {
+    'kinsenas-demo18': {
+        'dbname': "zer0w1ng-ez-addons-prod-20714000",
+        'host': "kinsenas-demo18.odoo.com",
+        'port': 443,
+        'protocol': 'jsonrpc+ssl',
+        'user': 'admin',
+        'admin_pwd': "12345",
+        'hired': '2022',
+        'months': 24,
+
+        'create_employees': 0,
+        'create_attendance': 0,
+        'create_timekeeping': 0,
+        'create_payroll_rate': 0,
+        'create_payroll': 1,
+    },
+}
 
 if __name__ == "__main__":
+    setting = SETTINGS['kinsenas-demo18']
+    odoo = get_odoo_connection(setting)
 
-    # dbname = "zer0w1ng-test-upgrade17-stage-20678451"
-    # host = "zer0w1ng-test-upgrade17-stage-20678451.dev.odoo.com"
-    # port = 443
-    # protocol = 'jsonrpc+ssl'
-    # user = 'admin'
-    # admin_pwd = "70f50d3e76b422ef25d8ae29ddacd9b5f28620ba"
-
-    dbname = "zer0w1ng-test-upgrade17-prod-20678384"
-    host = "zer0w1ng-test-upgrade17-prod-20678384.dev.odoo.com"
-    port = 443
-    protocol = 'jsonrpc+ssl'
-    user = 'admin'
-    admin_pwd = "12345"
-
-    super_password = "x"
-
-    odoo = odoorpc.ODOO(
-        host,
-        port=port,
-        protocol=protocol,
-        # protocol='jsonrpc+ssl'
-        # protocol='jsonrpc'
-    )
-
-    print("Connect", host)
-    odoo.login(dbname, user, admin_pwd)
-    # print(odoo)
-
-    # conn = OdooConnection(host, port, admin_pwd, super_password)
-    # odoo = conn.get_session(dbname)
-
-    if 0:
-        #                               hired
-        hired = '2022'
-        res = odoo.env['hr.employee'].demo_create_employee(hired)
-        pprint(res)
-
-    if 0:
-        create_demo_attendance(odoo)
-
-    if 0:
-        create_demo_timekeeping(odoo)
-
-    if 0:
-        create_demo_payroll_rate(odoo)
-
-    if 1:
-        create_demo_payroll(odoo)
+    create_demo_employees(odoo, setting)
+    create_demo_attendance(odoo, setting)
+    create_demo_timekeeping(odoo, setting)
+    create_demo_payroll_rate(odoo, setting)
+    create_demo_payroll(odoo, setting)
 

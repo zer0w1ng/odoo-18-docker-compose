@@ -20,12 +20,13 @@ if (($REMOTE != 0)); then
     DB="test2"
     # MODULES="ez_hr"
     # MODULES="ez_hr_namesplit"
-    # MODULES="ez_payroll"
+    MODULES="ez_payroll"
     # MODULES="ez_payroll_alphalist"
     # MODULES="ez_payroll_coe"
     # MODULES="ez_payroll_ot_report"
     # MODULES="ez_timekeeping"
-    MODULES="ez_payroll_ess"
+    # MODULES="ez_timekeeping,ez_timekeeping_request"
+    # MODULES="ez_hr"
     # MODULES="ez_hr,ez_hr_namesplit,ez_payroll"
     update_db
 else
