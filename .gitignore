@@ -1,5 +1,7 @@
 postgresql/
 OpenUpgrade/
+odoo-18*
+odoo18ee
 ez_addons/
 etc/odoo-server.log
 etc/addons/
