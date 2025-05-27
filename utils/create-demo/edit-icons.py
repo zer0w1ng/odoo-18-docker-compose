@@ -33,8 +33,8 @@ SETTINGS = {
     },
 
     'jetserv-staging': {
-        'dbname': "zer0w1ng-jetserv-stage2-20709854",
-        'host': "zer0w1ng-jetserv-stage2-20709854.dev.odoo.com",
+        'dbname': "zer0w1ng-jetserv-stage3-20752397",
+        'host': "zer0w1ng-jetserv-stage3-20752397.dev.odoo.com",
         'port': 443,
         'protocol': 'jsonrpc+ssl',
         'user': 'evillareal@jetsitransport.com',
@@ -68,15 +68,19 @@ if __name__ == "__main__":
             'web_icon', 
             #'web_icon_data',
         ])
+    #pprint(kres_menu)
+    #pprint(jres_menu)
     
-    Menu = odoo_jetserv.env['ir.ui.menu']
-    for j in jres_menu:
-        menu = kmenu[j['name']]
-        print(j['id'], j['name'], j['web_icon'], menu)
-        Menu.write(j['id'], {
-            'web_icon': menu['web_icon'],
-            'web_icon_data': False,
-        })
+    if 1:
+        Menu = odoo_jetserv.env['ir.ui.menu']
+        for j in jres_menu:
+            # TODO - update accounting first
+            menu = kmenu[j['name']]
+            print(j['id'], j['name'], j['web_icon'], menu)
+            Menu.write(j['id'], {
+                'web_icon': menu['web_icon'],
+                'web_icon_data': False,
+            })
 
 
     #pprint(kmenu)

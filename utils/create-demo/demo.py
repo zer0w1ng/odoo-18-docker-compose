@@ -309,6 +309,59 @@ def create_demo_attendance(odoo, setting):
             res = Attendance.load(header, data)
             pprint(res)
 
+
+def create_deduction_entry(odoo, date, name):
+    Deduction = odoo.env['hr.ph.pay.deduction.entry']
+    Employee = odoo.env['hr.employee']
+    DeductionLine = odoo.env['hr.ph.pay.deduction.entry.details']
+     
+    res = Deduction.search([('name','=',name)])
+    if res:
+        print('Already create deduction:', name)
+        return False
+    
+    print('Creating deduction:', name)
+
+    ded_id = Deduction.create({
+        'name': name,
+        'date': date,
+        'state': 'done',
+    })
+
+    emp_ids = Employee.search([])
+    seq = 0
+    for emp_id in emp_ids:
+        seq += 10
+        DeductionLine.create({
+            'other_deduction_id': ded_id,
+            'seq': seq,
+            'employee_id': emp_id,
+            'amount': 2000.0 * random.random(),
+        })
+
+
+
+def create_demo_others(odoo, setting):
+    if not setting['create_others']:
+        return
+
+    today = datetime.today()
+    start = today - relativedelta(months=1)
+
+    Loan = odoo.env['hr.ph.loan']
+    Loan.create_demo_data((start-relativedelta(months=2)).strftime("%Y-%m-%d"), "A001")
+    Loan.create_demo_data((start-relativedelta(months=2)).strftime("%Y-%m-%d"), "A002")
+
+    Compensation = odoo.env['ez.work.summary.sheet']
+    Compensation.create_demo_data(start.strftime('Adjustments %b %Y'), start.strftime('%Y-%m-1'), False)
+
+    create_deduction_entry(odoo, start.strftime('%Y-%m-02'), start.strftime('Canteen %b %Y A'))
+    create_deduction_entry(odoo, start.strftime('%Y-%m-02'), start.strftime('Union Dues %b %Y A'))
+    create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Canteen %b %Y B'))
+    create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Union Dues %b %Y B'))
+
+
+
 SETTINGS = {
     'kinsenas-demo18': {
         'dbname': "zer0w1ng-ez-addons-prod-20714000",
@@ -324,7 +377,8 @@ SETTINGS = {
         'create_attendance': 0,
         'create_timekeeping': 0,
         'create_payroll_rate': 0,
-        'create_payroll': 1,
+        'create_others': 1,
+        'create_payroll': 0,
     },
 }
 
@@ -336,5 +390,7 @@ if __name__ == "__main__":
     create_demo_attendance(odoo, setting)
     create_demo_timekeeping(odoo, setting)
     create_demo_payroll_rate(odoo, setting)
+
+    create_demo_others(odoo, setting)
     create_demo_payroll(odoo, setting)
 
