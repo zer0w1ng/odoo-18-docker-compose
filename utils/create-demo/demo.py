@@ -12,6 +12,10 @@ import os, time
 #from multiprocess import multi_load, chunks, MultiProcess, lprint
 #from odoo_utils import *
 
+import requests, base64
+from PIL import Image
+from io import BytesIO
+
 
 def create_demo_timekeeping(odoo, setting):
     if not setting['create_timekeeping']:
@@ -361,6 +365,29 @@ def create_demo_others(odoo, setting):
     create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Union Dues %b %Y B'))
 
 
+def create_demo_employee_images(odoo, setting):
+    if setting['create_employee_images']:
+
+        #create picturs
+        def _get_random_image():
+            url = "https://100k-faces.glitch.me/random-image"
+            response = requests.get(url)
+            image_bytes = BytesIO(response.content)
+            image_1920 = base64.b64encode(image_bytes.getvalue()).decode("utf-8")
+            #print(type(image_1920), len(image_1920))
+            return image_1920
+            
+        Employee = odoo.env['hr.employee']
+        employee_ids = Employee.search([])
+
+        for emp_id in employee_ids:
+            image_1920 = _get_random_image()
+            res = Employee.write(emp_id, {
+                'image_1920': image_1920,
+            })
+            print(res)
+
+
 
 SETTINGS = {
     'kinsenas-demo18': {
@@ -377,8 +404,9 @@ SETTINGS = {
         'create_attendance': 0,
         'create_timekeeping': 0,
         'create_payroll_rate': 0,
-        'create_others': 1,
+        'create_others': 0,
         'create_payroll': 0,
+        'create_employee_images': 0,
     },
 }
 
@@ -390,7 +418,7 @@ if __name__ == "__main__":
     create_demo_attendance(odoo, setting)
     create_demo_timekeeping(odoo, setting)
     create_demo_payroll_rate(odoo, setting)
-
     create_demo_others(odoo, setting)
     create_demo_payroll(odoo, setting)
 
+    create_demo_employee_images(odoo, setting)
