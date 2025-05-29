@@ -15,6 +15,7 @@ import os, time
 import requests, base64
 from PIL import Image
 from io import BytesIO
+from faker import Faker
 
 
 def create_demo_timekeeping(odoo, setting):
@@ -228,8 +229,10 @@ def get_odoo_connection(settings):
 ####################################################
 
 def create_demo_employees(odoo, setting):
-    if setting['create_employees']:
-        Employee = odoo.env['hr.employee']
+    Employee = odoo.env['hr.employee']
+    fake = Faker()
+
+    if setting['create_employees']==1:
         res = Employee.demo_create_employee(setting['hired'])
         admin_id = Employee.search([('name', '=', 'Administrator')], limit=1)
         if admin_id:
@@ -237,12 +240,43 @@ def create_demo_employees(odoo, setting):
                 'last_name': 'Doe',
                 'first_name': 'Johnny Admin',
                 'middle_name': 'Cruz',
+                'work_phone': f"032-340-{random.randint(1000, 9999)}",
+                'work_phone': f"032-340-{random.randint(1000, 9999)}",
+                'mobile_phone': f"0917-{random.randint(100, 999)}-{random.randint(1000, 9999)}",
+                'tz': 'Asia/Manila',
             })
         ids = Employee.search([])
-        Employee.write(ids, {
-            'tz': 'Asia/Manila',
-        })
+        for id in ids:
+            lname = fake.last_name()
+            fname = fake.first_name()
+            Employee.write(id, {
+                'last_name': lname,
+                'first_name': fname,
+                'middle_name': fake.last_name(),
+                'work_email': f"{fname.lower()}.{lname.lower()}@example.com",
+                'work_phone': f"032-340-{random.randint(1000, 9999)}",
+                'work_phone': f"032-340-{random.randint(1000, 9999)}",
+                'mobile_phone': f"0917-{random.randint(100, 999)}-{random.randint(1000, 9999)}",
+                'tz': 'Asia/Manila',
+            })
         print(f"Create employees: {pformat(res)}")
+    elif setting['create_employees']==2:
+        emp_ids = Employee.search([('last_name', '!=', 'Doe')])
+        for emp_id in emp_ids:
+            lname = fake.last_name()
+            fname = fake.first_name()
+            val = {
+                'last_name': lname,
+                'first_name': fname,
+                'middle_name': fake.last_name(),
+                'work_email': f"{fname.lower()}.{lname.lower()}@example.com",
+                'work_phone': f"032-340-{random.randint(1000, 9999)}",
+                'work_phone': f"032-340-{random.randint(1000, 9999)}",
+                'mobile_phone': f"0917-{random.randint(100, 999)}-{random.randint(1000, 9999)}",
+            }
+            pprint(val)
+            Employee.write(emp_id, val)
+
 
 
 def create_demo_attendance(odoo, setting):
@@ -388,6 +422,69 @@ def create_demo_employee_images(odoo, setting):
             print(res)
 
 
+def create_demo_leaves(odoo, setting):
+    if not setting['create_employee_leaves']:
+        return
+
+    Allocation = odoo.env['hr.leave.allocation']
+    Employee = odoo.env['hr.employee']
+    Leave = odoo.env['hr.leave']
+    LeaveType = odoo.env['hr.leave.type']
+
+    now = datetime.now()
+    pto_leave_type_id = LeaveType.search([('name','=','Paid Time Off')]) or [False]
+    pto_sick_type_id = LeaveType.search([('name','=','Sick Time Off')]) or [False]
+    emp_ids = Employee.search([])
+
+    alloc_ids = Allocation.search([], limit=1)
+    if not alloc_ids:
+        alloc_ids = []
+        for emp_id in emp_ids:
+            alloc_id = Allocation.create({
+                'employee_id': emp_id,
+                'holiday_status_id': pto_leave_type_id[0],
+                'date_from': now.strftime('%Y-01-01'),
+                'date_to': now.strftime('%Y-12-31'),
+                'number_of_days': 10,
+            })
+            alloc_ids.append(alloc_id)
+
+            alloc_id = Allocation.create({
+                'employee_id': emp_id,
+                'holiday_status_id': pto_sick_type_id[0],
+                'date_from': now.strftime('%Y-01-01'),
+                'date_to': now.strftime('%Y-12-31'),
+                'number_of_days': 5,
+            })
+            alloc_ids.append(alloc_id)
+
+        Allocation.action_approve(alloc_ids)
+        print("Created Allocations")
+
+    leave_ids = Leave.search([], limit=1)
+    if not leave_ids:
+        leave_ids = []
+        for emp_id in emp_ids:
+            days = random.randrange(-20, 20)
+            dt = now - relativedelta(days=days)
+            choices = [pto_leave_type_id[0], pto_sick_type_id[0]]
+            leave_type = random.choice(choices)
+            leave_id = Leave.create({
+                'employee_id': emp_id,
+                'holiday_status_id': leave_type,
+                'date_from': dt.strftime("%Y-%m-%d"),
+                'date_to': dt.strftime("%Y-%m-%d"),
+                'number_of_days': 10,
+            })
+            leave_ids.append(leave_id)
+
+        Leave.action_approve(leave_ids)
+        print("Created Leaves")
+        leave_ids = Leave.search([('state','=','validate1')])
+        Leave.action_validate(leave_ids)
+        print("Validated Leaves")
+
+
 
 SETTINGS = {
     'kinsenas-demo18': {
@@ -407,7 +504,29 @@ SETTINGS = {
         'create_others': 0,
         'create_payroll': 0,
         'create_employee_images': 0,
+        'create_employee_leaves': 1,
     },
+
+    'localhost-18': {
+        'dbname': "test2",
+        'host': "localhost",
+        'port': 10018,
+        'protocol': 'jsonrpc',
+        'user': 'admin',
+        'admin_pwd': "12345",
+        'hired': '2022',
+        'months': 24,
+
+        'create_employees': 0,
+        'create_attendance': 0,
+        'create_timekeeping': 0,
+        'create_payroll_rate': 0,
+        'create_others': 0,
+        'create_payroll': 0,
+        'create_employee_images': 0,
+        'create_employee_leaves': 0,
+    },
+
 }
 
 if __name__ == "__main__":
@@ -419,6 +538,14 @@ if __name__ == "__main__":
     create_demo_timekeeping(odoo, setting)
     create_demo_payroll_rate(odoo, setting)
     create_demo_others(odoo, setting)
-    create_demo_payroll(odoo, setting)
+    create_demo_leaves(odoo, setting)
 
+    create_demo_payroll(odoo, setting)
     create_demo_employee_images(odoo, setting)
+
+    if 0:
+        setting = SETTINGS['localhost-18']
+        Employee = odoo.env['hr.employee']
+        ids = Employee.search([])
+        print(Employee, ids)
+        Employee.get_salary_rate(ids)

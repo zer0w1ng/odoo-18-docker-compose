@@ -28,6 +28,7 @@ if (($REMOTE != 0)); then
     # MODULES="ez_timekeeping,ez_timekeeping_request"
     # MODULES="ez_hr"
     # MODULES="ez_hr,ez_hr_namesplit,ez_payroll"
+    # MODULES="ez_payroll,ez_payroll_salary_increase"
     update_db
 else
     echo LOCAL
