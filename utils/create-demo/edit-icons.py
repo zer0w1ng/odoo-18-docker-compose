@@ -33,8 +33,8 @@ SETTINGS = {
     },
 
     'jetserv-staging': {
-        'dbname': "zer0w1ng-jetserv-stage3-20752397",
-        'host': "zer0w1ng-jetserv-stage3-20752397.dev.odoo.com",
+        'dbname': "zer0w1ng-jetserv-stage4-20877998",
+        'host': "zer0w1ng-jetserv-stage4-20877998.dev.odoo.com",
         'port': 443,
         'protocol': 'jsonrpc+ssl',
         'user': 'evillareal@jetsitransport.com',

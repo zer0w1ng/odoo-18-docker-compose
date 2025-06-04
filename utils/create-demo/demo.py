@@ -15,7 +15,10 @@ import os, time
 import requests, base64
 from PIL import Image
 from io import BytesIO
+
 from faker import Faker
+from faker.providers.address.en_PH import Provider as AddressProviderEnPH
+fake = Faker('en_PH')
 
 
 def create_demo_timekeeping(odoo, setting):
@@ -380,23 +383,39 @@ def create_deduction_entry(odoo, date, name):
 
 
 def create_demo_others(odoo, setting):
-    if not setting['create_others']:
-        return
+    if setting['create_others']:
+        today = datetime.today()
+        start = today - relativedelta(months=1)
 
-    today = datetime.today()
-    start = today - relativedelta(months=1)
+        Loan = odoo.env['hr.ph.loan']
+        Loan.create_demo_data((start-relativedelta(months=2)).strftime("%Y-%m-%d"), "A001")
+        Loan.create_demo_data((start-relativedelta(months=2)).strftime("%Y-%m-%d"), "A002")
 
-    Loan = odoo.env['hr.ph.loan']
-    Loan.create_demo_data((start-relativedelta(months=2)).strftime("%Y-%m-%d"), "A001")
-    Loan.create_demo_data((start-relativedelta(months=2)).strftime("%Y-%m-%d"), "A002")
+        Compensation = odoo.env['ez.work.summary.sheet']
+        Compensation.create_demo_data(start.strftime('Adjustments %b %Y'), start.strftime('%Y-%m-1'), False)
 
-    Compensation = odoo.env['ez.work.summary.sheet']
-    Compensation.create_demo_data(start.strftime('Adjustments %b %Y'), start.strftime('%Y-%m-1'), False)
+        create_deduction_entry(odoo, start.strftime('%Y-%m-02'), start.strftime('Canteen %b %Y A'))
+        create_deduction_entry(odoo, start.strftime('%Y-%m-02'), start.strftime('Union Dues %b %Y A'))
+        create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Canteen %b %Y B'))
+        create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Union Dues %b %Y B'))
 
-    create_deduction_entry(odoo, start.strftime('%Y-%m-02'), start.strftime('Canteen %b %Y A'))
-    create_deduction_entry(odoo, start.strftime('%Y-%m-02'), start.strftime('Union Dues %b %Y A'))
-    create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Canteen %b %Y B'))
-    create_deduction_entry(odoo, start.strftime('%Y-%m-18'), start.strftime('Union Dues %b %Y B'))
+    if 1:
+        #employee private address
+        Employee = odoo.env['hr.employee']
+        employee_ids = Employee.search([])
+        for emp_id in employee_ids:
+            # <field name="private_street">215 Vine St</field>
+            # <field name="private_city">Scranton</field>
+            # <field name="private_zip">18503</field>
+            # <field name="private_country_id" ref="base.us"/>
+            # <field name="private_state_id" ref="base.state_us_39"/>
+            # <field name="private_phone">+1 555-555-5555</field>
+            # <field name="private_email">admin@yourcompany.example.com</field>
+            Employee.write(emp_id, {
+                'private_street': fake.street_name(),
+                'private_street2': fake.street_name(),
+                'private_city': 'Scranton',
+            })
 
 
 def create_demo_employee_images(odoo, setting):

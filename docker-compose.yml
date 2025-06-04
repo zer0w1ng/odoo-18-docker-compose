@@ -1,4 +1,4 @@
-version: '2'
+#version: '2'
 services:
   db:
     image: postgres:17
@@ -31,6 +31,7 @@ services:
       # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
       - ./addons:/mnt/extra-addons
       - ./ez_addons:/mnt/ez_addons
+      - ./quest:/mnt/quest
       - ./etc:/etc/odoo
     restart: always             # run as a service
     

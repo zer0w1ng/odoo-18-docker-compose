@@ -3,6 +3,8 @@ OpenUpgrade/
 odoo-18*
 odoo18ee
 ez_addons/
+compiled_ez_addons/
+quest/
 etc/odoo-server.log
 etc/addons/
 etc/sessions/
