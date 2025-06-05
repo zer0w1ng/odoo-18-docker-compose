@@ -32,8 +32,8 @@ if (($REMOTE != 0)); then
     # MODULES="ez_payroll,ez_payroll_timekeeping"
     # MODULES="ez_hr_esignature"
     # MODULES="ez_payroll_ess,ez_hr_esignature"
-    # MODULES="ez_custom_holiday"
-    MODULES="ez_custom_payslip"
+    MODULES="ez_custom_holiday"
+    # MODULES="ez_custom_payslip"
     update_db
 else
     echo LOCAL
