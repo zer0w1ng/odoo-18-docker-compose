@@ -17,7 +17,12 @@ RESTART=0
 if (($REMOTE != 0)); then
     echo REMOTE
     # #############################################################
-    DB="test2"
+    DB="demo18"
+    MODULES="account_ph_slsp"
+
+
+    # DB="test2"
+
     # MODULES="ez_hr"
     # MODULES="ez_hr_namesplit"
     # MODULES="ez_payroll"
@@ -32,8 +37,10 @@ if (($REMOTE != 0)); then
     # MODULES="ez_payroll,ez_payroll_timekeeping"
     # MODULES="ez_hr_esignature"
     # MODULES="ez_payroll_ess,ez_hr_esignature"
-    MODULES="ez_custom_holiday"
+    # MODULES="ez_custom_holiday"
     # MODULES="ez_custom_payslip"
+    # MODULES="ez_payroll_ot_request"
+
     update_db
 else
     echo LOCAL
