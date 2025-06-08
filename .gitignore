@@ -10,5 +10,6 @@ etc/addons/
 etc/sessions/
 etc/filestore/
 etc/odoo.conf
+*/test/*
 *.pyc
 *.log

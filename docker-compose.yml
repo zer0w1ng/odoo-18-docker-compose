@@ -33,7 +33,7 @@ services:
       - ./ez_addons:/mnt/ez_addons
       - ./quest:/mnt/quest
       - ./addons-odoo-apps-store/account_ph_slsp:/mnt/account_ph_slsp
-      #- ./addons-odoo-apps-store:/mnt/addons-odoo-apps-store
+      - ./addons-odoo-apps-store/account_ph_2306_2307:/mnt/account_ph_2306_2307
       - ./etc:/etc/odoo
     restart: always             # run as a service
     

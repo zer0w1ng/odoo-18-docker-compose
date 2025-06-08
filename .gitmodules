@@ -1,3 +1,6 @@
 [submodule "addons/account_ph_slsp"]
 	path = addons-odoo-apps-store/account_ph_slsp
 	url = git@github.com:zer0w1ng/account_ph_slsp.git
+[submodule "addons-odoo-apps-store/account_ph_2306_2307"]
+	path = addons-odoo-apps-store/account_ph_2306_2307
+	url = git@github.com:zer0w1ng/account_ph_2306_2307.git
