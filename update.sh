@@ -18,7 +18,9 @@ if (($REMOTE != 0)); then
     echo REMOTE
     # #############################################################
     DB="demo18"
-    MODULES="account_ph_slsp"
+    # MODULES="account_ph_slsp"
+    # MODULES="account_ph_2306_2307"
+    MODULES="account_ph_bir_map"
 
 
     # DB="test2"
