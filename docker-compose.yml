@@ -1,7 +1,14 @@
 #version: '2'
+
+# docker-compose down
+# docker system prune
+# docker-compose build -d -build
+# DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose build
+
 services:
   db:
-    image: postgres:17
+    #image: postgres:17
+    build: ./build/db
     user: root
     environment:
       - POSTGRES_USER=odoo
@@ -11,9 +18,13 @@ services:
     volumes:
       - ./postgresql:/var/lib/postgresql/data
 
+    # psql -U odoo dhl
+    # CREATE EXTENSION IF NOT EXISTS postgis;
+    # CREATE EXTENSION IF NOT EXISTS postgis_topology;
+
   app:
     # image: odoo:18
-    build: .
+    build: ./build/app
     user: root
     depends_on:
       - db

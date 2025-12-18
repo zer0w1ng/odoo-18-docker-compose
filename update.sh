@@ -2,7 +2,7 @@
 
 update_db() {
     CONFIG="/etc/odoo/odoo.conf"
-    CMD_OPT="odoo --stop-after-init --update $MODULES -p 9069 -d $DB -c $CONFIG" 
+    CMD_OPT="odoo --stop-after-init --update $MODULES -p 19069 -d $DB -c $CONFIG" 
     echo "Update Database db=$DB modules=$MODULES"
     echo $CMD_OPT
     docker-compose exec app bash -c "$CMD_OPT"
@@ -17,11 +17,13 @@ RESTART=0
 if (($REMOTE != 0)); then
     echo REMOTE
     # #############################################################
-    DB="demo18"
+    # DB="demo18"
     # MODULES="account_ph_slsp"
     # MODULES="account_ph_2306_2307"
-    MODULES="account_ph_bir_map"
+    # MODULES="account_ph_bir_map"
 
+    DB="dhl"
+    MODULES="ez_custom_dhl"
 
     # DB="test2"
 

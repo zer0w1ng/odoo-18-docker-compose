@@ -16,9 +16,19 @@ RESTART=0
 
 if (($REMOTE != 0)); then
     echo REMOTE
+<<<<<<< HEAD
     DB="powerseat"
     #MODULES="all"
     MODULES="ez_bus_booking"
+=======
+    #MODULES="all"
+    # DB="pitx"
+    # MODULES="ez_custom_pitx"
+
+    DB="dhl"
+    MODULES="ez_custom_dhl"
+ 
+>>>>>>> 136c0de77221dca30490ab9bfa69a31149beeaba
     update_db
 fi
 
