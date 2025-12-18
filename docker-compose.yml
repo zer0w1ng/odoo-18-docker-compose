@@ -2,7 +2,7 @@
 
 # docker-compose down
 # docker system prune
-# docker-compose build -d -build
+# docker-compose up -d -build
 # DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose build
 
 services:
@@ -43,6 +43,7 @@ services:
       - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
       - ./addons:/mnt/extra-addons
       - ./ez_addons:/mnt/ez_addons
+      - ./geospatial/base_geoengine:/mnt/extra-addons/base_geoengine
       #- ./quest:/mnt/quest
       #- ./addons-odoo-apps-store:/mnt/addons-odoo-apps-store
       - ./addons-odoo-apps-store/account_ph_slsp:/mnt/account_ph_slsp
