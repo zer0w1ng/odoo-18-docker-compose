@@ -55,7 +55,6 @@
                                                     )
                                                 }
                                                 $('#button_bus_search').prop('disabled', true) 
-
                                        }
                                        else{
                                             $("#bus_list_table").hide()
@@ -165,8 +164,8 @@
 
         $("#button_bus_clear_search").click(function () {
             $(".o_bus_list_body tr").remove();
+            // $(".o_bus_list_body").find("tr").remove();
             $('#button_bus_search').prop('disabled', false) 
-
         })
 
     });

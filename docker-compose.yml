@@ -12,7 +12,8 @@ services:
         - ./postgresql:/var/lib/postgresql/data
 
   app:
-    image: odoo:18
+    # image: odoo:18
+    build: .
     user: root
     depends_on:
       - db
@@ -28,8 +29,9 @@ services:
     volumes:
       #- /etc/timezone:/etc/timezone:ro
       #- /etc/localtime:/etc/localtime:ro
-      # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
+      - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
       - ./addons:/mnt/extra-addons
+      - ./ez_addons:/mnt/ez_addons
       - ./etc:/etc/odoo
     restart: always             # run as a service
     

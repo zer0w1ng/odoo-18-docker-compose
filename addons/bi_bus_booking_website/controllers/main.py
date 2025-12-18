@@ -6,6 +6,10 @@ from odoo.http import request
 import pytz
 from datetime import datetime
 from odoo.addons.website_sale.controllers.main import WebsiteSale
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class BusBookingWebsiteSale(WebsiteSale):
 
@@ -28,6 +32,10 @@ class BusBooking(http.Controller):
         bus_types_obj = request.env["bus.types"].sudo()
         bus_point_ids = bus_point_obj.search([])
         bus_types_ids = bus_types_obj.search([])
+
+        # _logger.debug("bus_start_point_ids: %s", bus_point_ids)
+        # _logger.debug("bus_end_point_ids: %s", bus_point_ids)
+
         if bus_point_ids and bus_types_ids:
             bus_dict.update({
                             "start_point_ids":bus_point_ids,
@@ -51,6 +59,8 @@ class BusBooking(http.Controller):
                         ("m2o_bus_types_id", "=", int(bus_types)),
             ]
             bus_routes_line_ids = bus_routes_line_obj.search(domain)
+            _logger.debug("bus_routes_line_ids: %s", bus_routes_line_ids)
+
             if bus_routes_line_ids:
                 total_seats = 0
                 remaining_seat = 0
@@ -78,10 +88,13 @@ class BusBooking(http.Controller):
                                              "start_time":self.get_local_date_time(bus_routes_line_id.start_time),
                                              "end_time":self.get_local_date_time(bus_routes_line_id.end_time),
                                            })
+                    _logger.debug("add bus_routes_line_id: %s", bus_routes_line_id.id)
+                    
+                _logger.debug("res routes_line_list: %s", routes_line_list)
                 return routes_line_list
 
     def get_local_date_time(self, current_date_time):
-        user_tz = request.env.user.tz or pytz.utc
+        user_tz = request.env.user.tz or ('%s' % pytz.utc)
         local = pytz.timezone(user_tz)
         if datetime:
             current_date = datetime.strptime(str(current_date_time), "%Y-%m-%d %H:%M:%S")

@@ -16,9 +16,9 @@ RESTART=0
 
 if (($REMOTE != 0)); then
     echo REMOTE
-    DB="pitx"
+    DB="powerseat"
     #MODULES="all"
-    MODULES="ez_custom_pitx"
+    MODULES="ez_bus_booking"
     update_db
 fi
 

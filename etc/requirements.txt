@@ -6,3 +6,5 @@
 # then down the docker container ($ docker-compose down) and up it again ($ docker-compose up -d).
 # -----------------------
 # paramiko==2.7.2 # for auto_backup module
+
+paramiko==2.7.2 # for auto_backup module
