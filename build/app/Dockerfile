@@ -6,7 +6,9 @@ USER root
 
 # Update the package list and install paramiko
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3-paramiko && \
+    apt-get install -y --no-install-recommends \
+        python3-paramiko postgis \
+        python3-shapely python3-geojson && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
