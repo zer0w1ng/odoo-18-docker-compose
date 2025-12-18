@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Awesome Icon to PNG Converter</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 4.7.0 CDN (used by Odoo 18) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Custom font for overall styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            /* Light background */
+            color: #333;
+        }
+
+        /* Style for the canvas to ensure it's visible if needed for preview */
+        #iconCanvas {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            /* White background for the canvas area */
+        }
+
+        /* Basic styling for the Font Awesome icon when rendered for html2canvas */
+        /* IMPORTANT: This container is used by html2canvas to render the icon.
+           Flexbox centering ensures the icon is perfectly centered within the capture area. */
+        #tempIconContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            /* Ensure transparent background */
+            box-sizing: content-box;
+            /* Ensures padding adds to total size, if any is applied */
+        }
+
+        /* Styling for the Font Awesome icon itself */
+        #tempIconContainer i {
+            display: inline-block;
+            /* Essential for html2canvas to capture correctly */
+            line-height: 1;
+            /* Adjust line height to prevent extra space around the font */
+            /* Added transform to slightly move the icon up for better vertical centering */
+            transform: translateY(-40%);
+            /* Adjust this value as needed: negative for up, positive for down */
+        }
+    </style>
+</head>
+
+<body class="p-4 sm:p-6 lg:p-8 min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 text-gray-800">
+            <i class="fa fa-picture-o mr-2 text-blue-500"></i> Font Awesome Icon to PNG
+        </h1>
+
+        <div class="space-y-4 mb-6">
+            <div>
+                <label for="iconClass" class="block text-sm font-medium text-gray-700 mb-1">
+                    Font Awesome 4 Class
+                </label>
+                <input type="text" id="iconClass"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="e.g., fa fa-home, fa fa-star" value="fa fa-star">
+            </div>
+            <div>
+                <label for="iconSize" class="block text-sm font-medium text-gray-700 mb-1">
+                    PNG Size (pixels)
+                </label>
+                <input type="number" id="iconSize"
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    placeholder="e.g., 64, 128, 256" value="102" min="16" max="1024">
+            </div>
+            <div>
+                <label for="iconColor" class="block text-sm font-medium text-gray-700 mb-1">
+                    Icon Color
+                </label>
+                <input type="color" id="iconColor"
+                    class="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    value="#3B82F6">
+            </div>
+        </div>
+
+        <button id="generateBtn"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-md shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Generate PNG
+        </button>
+
+        <div id="loadingMessage" class="text-center text-sm text-gray-600 mt-4 hidden">
+            Generating... Please wait.
+        </div>
+
+        <div id="errorMessage" class="text-center text-sm text-red-600 mt-4 hidden"></div>
+
+        <div id="outputArea" class="mt-8 text-center hidden">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Generated Icon</h2>
+            <canvas id="iconCanvas" class="w-full h-auto max-w-xs mx-auto rounded-lg shadow-inner"></canvas>
+            <a id="downloadLink"
+                class="inline-block mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 rounded-md shadow-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                download="font-awesome-icon.png" href="#" target="_blank">
+                Download PNG
+            </a>
+        </div>
+
+        <!-- Hidden container for html2canvas to render the icon -->
+        <!-- Set width, height, and flex properties here to ensure precise centering and capture -->
+        <div id="tempIconContainer" class="absolute -left-[9999px] -top-[9999px] overflow-hidden"></div>
+
+    </div>
+
+    <!-- html2canvas CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const iconClassInput = document.getElementById('iconClass');
+            const iconSizeInput = document.getElementById('iconSize');
+            const iconColorInput = document.getElementById('iconColor');
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const outputArea = document.getElementById('outputArea');
+            const iconCanvas = document.getElementById('iconCanvas');
+            const downloadLink = document.getElementById('downloadLink');
+            const tempIconContainer = document.getElementById('tempIconContainer');
+
+            // Function to display error messages
+            const displayError = (message) => {
+                errorMessage.textContent = message;
+                errorMessage.classList.remove('hidden');
+                outputArea.classList.add('hidden');
+            };
+
+            // Function to hide messages
+            const hideMessages = () => {
+                loadingMessage.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+            };
+
+            generateBtn.addEventListener('click', async () => {
+                hideMessages();
+                loadingMessage.classList.remove('hidden');
+                outputArea.classList.add('hidden'); // Hide output until new one is ready
+
+                const faClass = iconClassInput.value.trim();
+                const iconSize = parseInt(iconSizeInput.value, 10);
+                const iconColor = iconColorInput.value;
+
+                if (!faClass) {
+                    displayError('Please enter a Font Awesome class.');
+                    loadingMessage.classList.add('hidden');
+                    return;
+                }
+                if (isNaN(iconSize) || iconSize < 16 || iconSize > 1024) {
+                    displayError('Please enter a valid size between 16 and 1024 pixels.');
+                    loadingMessage.classList.add('hidden');
+                    return;
+                }
+
+                // Calculate the actual font size for the icon to fit within 80% of the PNG
+                const actualIconFontSize = iconSize * 0.8;
+
+                // Clear previous icon and create a new one in the hidden container
+                tempIconContainer.innerHTML = '';
+                const iconElement = document.createElement('i');
+                iconElement.className = faClass;
+                iconElement.style.fontSize = `${actualIconFontSize}px`; // Use calculated font size
+                iconElement.style.color = iconColor;
+
+                // Set explicit width and height on the container for capture
+                // This container now represents the final PNG size
+                tempIconContainer.style.width = `${iconSize}px`;
+                tempIconContainer.style.height = `${iconSize}px`;
+
+                tempIconContainer.appendChild(iconElement);
+
+                // Wait for the browser to render the icon before capturing
+                await new Promise(resolve => setTimeout(resolve, 50)); // Small delay to ensure rendering
+
+                try {
+                    // Capture the icon using html2canvas
+                    const canvas = await html2canvas(tempIconContainer, {
+                        backgroundColor: null, // Makes the background transparent
+                        scale: 2, // Capture at a higher resolution for better quality
+                        useCORS: true,
+                        // Ensure the capture area is exactly the size of the container
+                        width: iconSize,
+                        height: iconSize
+                    });
+
+                    // Set the output canvas dimensions to match the desired icon size
+                    iconCanvas.width = iconSize;
+                    iconCanvas.height = iconSize;
+                    const ctx = iconCanvas.getContext('2d');
+                    ctx.clearRect(0, 0, iconCanvas.width, iconCanvas.height); // Clear previous content
+                    ctx.drawImage(canvas, 0, 0, iconSize, iconSize); // Draw the captured image onto the visible canvas, scaling it to iconSize
+
+                    const pngUrl = iconCanvas.toDataURL('image/png');
+
+                    downloadLink.href = pngUrl;
+                    downloadLink.download = `${faClass.replace(/\s+/g, '-')}-${iconSize}px.png`;
+
+                    loadingMessage.classList.add('hidden');
+                    outputArea.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Error generating PNG:', error);
+                    displayError('Failed to generate PNG. Please check the icon class. ' + error.message);
+                    loadingMessage.classList.add('hidden');
+                } finally {
+                    // Clean up the temporary container styles
+                    tempIconContainer.innerHTML = '';
+                    tempIconContainer.style.width = '';
+                    tempIconContainer.style.height = '';
+                }
+            });
+
+            // Initial generation when the page loads
+            generateBtn.click();
+        });
+    </script>
+</body>
+
+</html>
