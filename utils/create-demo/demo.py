@@ -546,21 +546,47 @@ SETTINGS = {
         'create_employee_leaves': 0,
     },
 
+
+    'kinsenas-demo18-community': {
+        'dbname': "demo18.",
+        'host': "demo18.kinsenas.com",
+        'port': 443,
+        'protocol': 'jsonrpc+ssl',
+        'user': 'admin',
+        'admin_pwd': "12345",
+        'hired': '2022',
+        'months': 24,
+
+        'create_employees': 0,
+        'create_attendance': 0,
+        'create_timekeeping': 0,
+        'create_payroll_rate': 0,
+        'create_others': 0,
+        'create_payroll': 0,
+        'create_employee_images': 0,
+        'create_employee_leaves': 0,
+    },
+
 }
 
 if __name__ == "__main__":
     setting = SETTINGS['kinsenas-demo18']
     odoo = get_odoo_connection(setting)
 
-    create_demo_employees(odoo, setting)
-    create_demo_attendance(odoo, setting)
-    create_demo_timekeeping(odoo, setting)
-    create_demo_payroll_rate(odoo, setting)
-    create_demo_others(odoo, setting)
-    create_demo_leaves(odoo, setting)
+    Employee = odoo.env['hr.employee']
+    recs = Employee.search_read([], ["name"])
+    pprint(recs)
 
-    create_demo_payroll(odoo, setting)
-    create_demo_employee_images(odoo, setting)
+    if 0:
+        create_demo_employees(odoo, setting)
+        create_demo_attendance(odoo, setting)
+        create_demo_timekeeping(odoo, setting)
+        create_demo_payroll_rate(odoo, setting)
+        create_demo_others(odoo, setting)
+        create_demo_leaves(odoo, setting)
+
+        create_demo_payroll(odoo, setting)
+        create_demo_employee_images(odoo, setting)
 
     if 0:
         setting = SETTINGS['localhost-18']

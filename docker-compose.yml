@@ -1,4 +1,10 @@
 #version: '2'
+
+# docker-compose down
+# docker system prune
+# docker-compose build -d -build
+# DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose build
+
 services:
   db:
     image: postgres:17
@@ -12,7 +18,8 @@ services:
       - ./postgresql:/var/lib/postgresql/data
 
   app:
-    image: odoo:18
+    #image: odoo:18
+    build: .
     user: root
     depends_on:
       - db

@@ -16,9 +16,13 @@ RESTART=0
 
 if (($REMOTE != 0)); then
     echo REMOTE
-    DB="pitx"
     #MODULES="all"
-    MODULES="ez_custom_pitx"
+    # DB="pitx"
+    # MODULES="ez_custom_pitx"
+
+    DB="dhl"
+    MODULES="ez_custom_dhl"
+ 
     update_db
 fi
 
