@@ -31,11 +31,11 @@ services:
       # - ./entrypoint.sh:/entrypoint.sh   # if you want to install additional Python packages, uncomment this line!
       - ./addons:/mnt/extra-addons
       - ./ez_addons:/mnt/ez_addons
-      - ./quest:/mnt/quest
+      #- ./quest:/mnt/quest
       #- ./addons-odoo-apps-store:/mnt/addons-odoo-apps-store
-      - ./addons-odoo-apps-store/account_ph_slsp:/mnt/account_ph_slsp
-      - ./addons-odoo-apps-store/account_ph_2306_2307:/mnt/account_ph_2306_2307
-      - ./addons-odoo-apps-store/account_ph_bir_map:/mnt/account_ph_bir_map
+      #- ./addons-odoo-apps-store/account_ph_slsp:/mnt/account_ph_slsp
+      #- ./addons-odoo-apps-store/account_ph_2306_2307:/mnt/account_ph_2306_2307
+      #- ./addons-odoo-apps-store/account_ph_bir_map:/mnt/account_ph_bir_map
       - ./etc:/etc/odoo
     restart: always             # run as a service
     

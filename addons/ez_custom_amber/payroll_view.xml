@@ -1,0 +1,19 @@
+<odoo>
+    <record id="view_payroll_form_inh" model="ir.ui.view">
+        <field name="name">view_payroll_form_inh</field>
+        <field name="model">hr.ph.payroll</field>
+        <field name="inherit_id" ref="ez_payroll.view_payroll_form"/>
+        <field name="arch" type="xml">
+            <button name="del_blank"  position="before">
+                <button name="action_merge_leaves" type="object"
+                    confirm="Are you sure you want to merge leaves and before deleting absences?"
+                    invisible="state not in ('draft')"
+                    string="Merge Leaves"/>
+                <button name="action_del_lates_undertime_absences" type="object"
+                    confirm="Are you sure you want to delete lates, undertimes and absences?"
+                    invisible="state not in ('draft')"
+                    string="Delete Late/Absent/UT"/>
+            </button>
+        </field>
+    </record>
+</odoo>
