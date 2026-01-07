@@ -6,13 +6,13 @@
         <field name="arch" type="xml">
             <button name="del_blank"  position="before">
                 <button name="action_merge_leaves" type="object"
-                    confirm="Are you sure you want to merge leaves and before deleting absences?"
+                    confirm="Are you sure you want to merge leaves?"
                     invisible="state not in ('draft')"
                     string="Merge Leaves"/>
-                <button name="action_del_lates_undertime_absences" type="object"
-                    confirm="Are you sure you want to delete lates, undertimes and absences?"
+                <button name="action_del_lates_undertime" type="object"
+                    confirm="Are you sure you want to delete lates and undertimes?"
                     invisible="state not in ('draft')"
-                    string="Delete Late/Absent/UT"/>
+                    string="Delete Late/UT"/>
             </button>
         </field>
     </record>

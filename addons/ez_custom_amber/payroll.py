@@ -62,13 +62,13 @@ class Payroll(models.Model):
                 p.recompute_deduction()
 
 
-    def action_del_lates_undertime_absences(self):
+    def action_del_lates_undertime(self):
         self.ensure_one()
         Compensation = self.env['hr.ph.pay.computation']
         for p in self.payslip:
             comp_lines = Compensation.search([
                 ('payslip_id','=',p.id),
-                ('name','in',['Absent','Late','Undertime']),
+                ('name','in',['Late','Undertime']),
             ])
             _logger.debug("Payslit: name=%s recs=%s", p.employee_id.name, len(comp_lines))
             if comp_lines:
