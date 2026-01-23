@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- =======================================
+(c) 2024 Regulus Berdin
+======================================== -->
+<odoo>
+
+    <record id="helpdesk_team_tk" model="helpdesk.ticket.team">
+        <field name="name">Timekeeping and Payroll</field>
+    </record>
+
+    <record id="helpdesk_team_hr" model="helpdesk.ticket.team">
+        <field name="name">HR Services</field>
+    </record>
+
+    <record id="helpdesk_team_gov_ben" model="helpdesk.ticket.team">
+        <field name="name">Government Benefits</field>
+    </record>
+
+    <record id="helpdesk_team_comp_ben" model="helpdesk.ticket.team">
+        <field name="name">Company Granted Benefits</field>
+    </record>
+
+    <!-- <record id="helpdesk_team_others" model="helpdesk.ticket.team">
+        <field name="name">Other Issues</field>
+    </record> -->
+
+    <!-- <record id="helpdesk_mgmt.helpdesk_ticket_stage_in_progress" model="helpdesk.ticket.stage">
+        <field name="name">Submitted</field>
+    </record> -->
+
+    <!-- <function name="write" model="helpdesk.ticket.stage">
+        <function name="search" model="helpdesk.ticket.stage">
+            <value eval="[('name', '=', 'In Progress')]"/>
+        </function>
+        <value eval="{'name': 'Submitted'}"/>
+    </function> -->
+
+    <record id="helpdesk_tag_tk" model="helpdesk.ticket.tag">
+        <field name="name">Timekeeping</field>
+        <field name="color">1</field>
+    </record>
+
+    <record id="helpdesk_tag_timeoff" model="helpdesk.ticket.tag">
+        <field name="name">Time Off</field>
+        <field name="color">2</field>
+    </record>
+
+    <record id="helpdesk_tag_payroll" model="helpdesk.ticket.tag">
+        <field name="name">Payroll</field>
+        <field name="color">3</field>
+    </record>
+
+    <record id="helpdesk_tag_hr" model="helpdesk.ticket.tag">
+        <field name="name">HR Services</field>
+        <field name="color">4</field>
+    </record>
+
+    <record id="helpdesk_tag_gov_ben" model="helpdesk.ticket.tag">
+        <field name="name">Government Benefits</field>
+        <field name="color">5</field>
+    </record>
+
+    <record id="helpdesk_tag_comp_ben" model="helpdesk.ticket.tag">
+        <field name="name">Company Granted Benefits</field>
+        <field name="color">6</field>
+    </record>
+
+    <record id="helpdesk_categ_simple" model="helpdesk.ticket.category">
+        <field name="name">Simple</field>
+    </record>
+
+    <record id="helpdesk_categ_complex" model="helpdesk.ticket.category">
+        <field name="name">Complex</field>
+    </record>
+
+    <!-- ################################################################## -->
+    <record id="view_helpdesk_team_form" model="ir.ui.view">
+        <field name="name">view.helpdesk_team.form</field>
+        <field name="model">helpdesk.ticket.team</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_team_form"/>
+        <field name="arch" type="xml">
+            <page name="members" position="after">
+                <page name="tasks" string="Tasks">
+                    <field name="task_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field name="name"/>
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'no_create_edit': True, 'color_field': 'color',}"
+                            />
+                            <field name="assigned_id"/>
+                            <field name="category_id"/>
+                            <field name="turn_around_time"/>
+                        </list>
+                    </field>
+                </page>
+            </page>
+        </field>
+    </record>
+
+    <record id="list_helpdesk_tasks" model="ir.ui.view">
+        <field name="name">list_helpdesk_tasks</field>
+        <field name="model">helpdesk.ticket.task</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name"/>
+                <field name="team_id" optional="hide"/>
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'no_create_edit': True, 'color_field': 'color',}"
+                    optional="show"
+                />
+                <field name="assigned_id" optional="hide"/>
+                <field name="category_id" optional="show"/>
+                <field name="turn_around_time" optional="hide"/>
+                <field name="help_label" optional="hide"/>
+                <field name="help_link" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_helpdesk_tasks" model="ir.actions.act_window">
+        <field name="name">Tasks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">helpdesk.ticket.task</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem
+        id="helpdesk_ticket_task_menu"
+        name="Tasks"
+        parent="helpdesk_mgmt.helpdesk_ticket_config_main_menu"
+        action="action_helpdesk_tasks"
+        sequence="100"
+    />
+
+    <!-- ################################################################## -->
+
+    <record id="ticket_view_form_inherit" model="ir.ui.view">
+        <field name="name">ticket_view_form_inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_form"/>
+        <field name="arch" type="xml">
+            <button name="assign_to_me" position="before">
+                <field name="user_access" invisible="1"/>
+                <field name="escalate" invisible="1"/>
+                <field name="state" invisible="1"/>
+                <field name="is_admin" invisible="1"/>
+                <field name="is_submitted" invisible="1"/>
+
+                <button
+                    string="Submit"
+                    name="action_submit"
+                    type="object"
+                    confirm="Are you sure to continue?"
+                    class="oe_highlight"
+                    invisible="(state not in ('New'))"
+                />
+
+                <!-- <button
+                    string="Save"
+                    name="action_save"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="state not in ('In Progress')"
+                /> -->
+
+                <button
+                    string="Close Ticket"
+                    name="action_close"
+                    type="object"
+                    class="oe_highlight"
+                    invisible="(not is_admin) or (state not in ('In Progress'))"
+                />
+
+                <button
+                    string="Cancel Ticket"
+                    name="action_cancel"
+                    type="object"
+                    confirm="Are you sure to cancel this ticket?"
+                    invisible="state not in ('New', 'In Progress')"
+                />
+
+                <button
+                    string="Escalate"
+                    name="action_escalate"
+                    type="object"
+                    groups="helpdesk_mgmt.group_helpdesk_user_team"
+                    confirm="Warning! This will send an email to the next officer. Are you sure to continue?"
+                    invisible="(not escalate) or is_escalated"
+                />
+
+                <button
+                    string="Reset Escalate"
+                    name="action_reset_escalate"
+                    type="object"
+                    groups="helpdesk_mgmt.group_helpdesk_user_team"
+                    invisible="(not is_escalated)"
+                />
+
+            </button>
+
+            <field name="team_id" position='before'>
+                <field name="task_id" 
+                    required="1"
+                    options="{'no_create_edit': True, 'no_create': True}"
+                    readonly="state != 'New'"
+                    domain="team_id and [('team_id','=',team_id)] or []"/>
+                <field name="timecard_id" invisible="'Timekeeping' not in tag_name" 
+                    readonly="state != 'New'"
+                    string="Payroll"
+                    options="{'no_create_edit': True, 'no_create': True}"/>
+                <field name="timeoff_id" invisible="'Time Off' not in tag_name" 
+                    readonly="state != 'New'"
+                    options="{'no_create_edit': True, 'no_create': True}"/>
+                <field name="payslip_id" invisible="'Payroll' not in tag_name" 
+                    readonly="state != 'New'"
+                    string="Payroll"
+                    options="{'no_create_edit': True, 'no_create': True}"/>
+                <field name="tag_name" invisible="1"/>
+            </field>
+
+            <button name="assign_to_me" position="attributes">
+                <attribute name="invisible">user_access or (user_id != False)</attribute>
+            </button>
+
+            <field name="sequence" position='after'>
+                <field name="escalate_after" readonly="user_access"/>
+                <field name="is_escalated" invisible="1" readonly="user_access"/>
+                <field name="color" invisible="1" readonly="user_access"/>
+            </field>
+
+            <field name="team_id" position="attributes">
+                <attribute name="readonly">user_access or (state != 'New')</attribute>
+            </field>
+
+            <field name="user_id" position="attributes">
+                <attribute name="readonly">user_access</attribute>
+            </field>
+
+            <field name="partner_id" position="attributes">
+                <attribute name="readonly">user_access or (state != 'New')</attribute>
+            </field>
+
+            <field name="category_id" position="attributes">
+                <attribute name="readonly">user_access</attribute>
+            </field>
+
+            <field name="tag_ids" position="attributes">
+                <attribute name="readonly">user_access or (state != 'New')</attribute>
+            </field>
+
+            <field name="create_date" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="channel_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="partner_name" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="partner_email" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="sequence" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="priority" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="company_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <field name="stage_id" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </field>
+
+            <field name="description" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <page name="description" position="inside">
+                <field name="is_link" invisible="1"/>
+                <field name="help_link" invisible="1"/>
+                <field name="help_label" invisible="1"/>
+                <field name="help_url" invisible="(not help_label) and (not help_link)" 
+                    style="color:#008888; font-weight: bold;"/>
+                <!-- <div invisible="(not is_link) or (not help_link)">
+                    Useful help link - <field name="help_link" widget="url" readonly="1" text="Visit Site"/>.
+                </div>
+                <div invisible="is_link or (not help_link)">
+                    <field name="help_link"/>.
+                </div> -->
+
+                <!-- <field name="line_ids" options="{'no_create': True, 'no_create_edit': True}"> -->
+                <field name="line_ids">
+                    <!-- <list editable="bottom" decoration-info="not is_closed"> -->
+                    <list decoration-info="not is_closed">
+                        <field name="is_admin" column_invisible="1"/>
+                        <field name="is_submitted" column_invisible="1"/>
+                        <field name="is_closed" column_invisible="1"/>
+                        <!-- <field name="query" readonly="is_admin or is_submitted" required="1"/> -->
+
+                        <!-- <field name="ticket_id"/> -->
+
+                        <field name="query" readonly="is_submitted" required="1"/>
+                        <field name="answer" readonly="(not is_admin) or is_closed"/>
+                        <field name="attachment_ids"
+                            optional="show"
+                            readonly="((not is_admin) and is_submitted) or (is_admin and is_closed)"/>
+                        <!-- <field name="attachment_ids" widget="many2many_binary"
+                            readonly="((not is_admin) and is_submitted) or (is_admin and is_closed)"/> -->
+                        <field name="create_date" optional="hide"/>
+                        <!-- <button name="action_submit" string="Submit" type="object"/> -->
+                    </list>
+                    <form>
+                        <group>
+                            <field name="is_admin" invisible="1"/>
+                            <field name="is_submitted" invisible="1"/>
+                            <field name="is_closed" invisible="1"/>
+                            <!-- <field name="query" readonly="is_admin or is_submitted" required="1"/> -->
+                            <field name="query" readonly="is_submitted" required="1"/>
+                            <field name="answer" readonly="(not is_admin) or is_closed"/>
+                            <field name="attachment_ids" widget="many2many_binary"
+                                readonly="((not is_admin) and is_submitted) or (is_admin and is_closed)"/>
+                            <field name="create_date"/>
+                        </group>
+                    </form>
+                </field>
+            </page>
+            
+            <div name="button_box" position="before">
+                <widget
+                    name="web_ribbon" title="Escalated" bg_color="bg-info"
+                    invisible="(state != 'In Progress') or (not active) or (not is_escalated)"
+                />
+
+                <widget
+                    name="web_ribbon" title="Done" bg_color="bg-success"
+                    invisible="(state != 'Done')"
+                />
+
+                <widget
+                    name="web_ribbon" title="Cancelled" bg_color="bg-danger"
+                    invisible="(state != 'Cancelled')"
+                />
+
+                <widget
+                    name="web_ribbon" title="Rejected" bg_color="bg-danger"
+                    invisible="(state != 'Rejected')"
+                />
+            </div>
+
+        </field>
+    </record>
+
+    <record id="ticket_view_tree_inh" model="ir.ui.view">
+        <field name="name">ticket_view_tree_inh</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.ticket_view_tree"/>
+        <field name="arch" type="xml">
+            <field name="priority" position="after">
+                <field name="is_escalated"/>
+            </field>
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-info">is_escalated</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_helpdesk_team_form_inherit" model="ir.ui.view">
+        <field name="name">view_helpdesk_team_form_inherit</field>
+        <field name="model">helpdesk.ticket.team</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_team_form"/>
+        <field name="arch" type="xml">
+            <group name="right" position="inside">
+                <field name="escalate_ids" widget="many2many_tags"/>
+                <field name="escalate_emails"/>
+            </group>
+        </field>
+    </record>
+
+    <record id="helpdesk_ticket_view_search_inh" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.view.search.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.helpdesk_ticket_view_search"/>
+        <field name="arch" type="xml">
+
+            <field name="partner_id" position="before">
+                <field name="is_escalated"/>
+            </field>
+
+            <filter name="unassigned" position="before">
+                <!-- <filter name="filter_date_from" date="assigned_date" default_period="this_year" string="Current Year"/> -->
+                <separator/>
+                <filter
+                    string="Escalated"
+                    name="escalated"
+                    domain="[('is_escalated','=',True)]"
+                />
+            </filter>
+
+        </field>
+    </record>
+
+    <!-- <record id="view_helpdesk_ticket_kanban_inh" model="ir.ui.view">
+        <field name="name">view_helpdesk_ticket_kanban_inh</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk_mgmt.view_helpdesk_ticket_kanban"/>
+        <field name="arch" type="xml">
+            <field name="assigned_date" position="after">
+                <field name="is_escalated"/>
+            </field>
+            <field name="number" position="after">
+                <div t-if="record.is_escalated">
+                    ESCALATED
+                </div>
+            </field>
+        </field>
+    </record> -->
+
+    <!-- # CRON ################################# -->
+
+    <data noupdate="0">
+        <record forcecreate="True" id="ir_cron_escalate" model="ir.cron">
+            <field name="name">Check escalatation for Helpdesk Tickets </field>
+            <field name="model_id" ref="model_helpdesk_ticket"/>
+            <field name="state">code</field>
+            <field name="code">model.check_escalate()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <!-- <field name="numbercall">-1</field> -->
+            <!-- <field eval="True" name="doall"/> -->
+            <field eval="True" name="active"/>
+        </record>
+
+        <record id="helpdesk_ecalation_email_template" model="mail.template">
+            <field name="name">Ticket Escalation</field>
+            <field name="model_id" ref="model_helpdesk_ticket" />
+            <field name="email_from">{{object.company_id.partner_id.email}}</field>
+            <field
+                name="email_cc"
+            >{{not object.partner_id and object.partner_email or ''}},</field>
+            <field
+                name="subject"
+            >Ticket Escalated (Ref {{object.number or 'n/a' }})</field>
+            <field name="partner_to">{{object.partner_id.id}}</field>
+            <field name="auto_delete" eval="False" />
+            <field name="lang">{{object.partner_id.lang}}</field>
+            <field name="body_html" type="html">
+                <p>Hello <t t-out="object.partner_id.name" />,</p>
+                <p>The ticket <t t-out="object.number" /> has been escalated.</p>
+            </field>
+        </record>
+    </data>
+
+</odoo>
