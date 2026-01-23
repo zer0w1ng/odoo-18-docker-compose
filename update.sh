@@ -17,10 +17,13 @@ RESTART=0
 if (($REMOTE != 0)); then
     echo REMOTE
     # #############################################################
-    DB="demo18"
+    #DB="demo18"
+    DB="amber-staging"
+    #DB="amber"
+    MODULES="hr_dashboard"
     # MODULES="account_ph_slsp"
     # MODULES="account_ph_2306_2307"
-    MODULES="account_ph_bir_map"
+    #MODULES="account_ph_bir_map"
 
 
     # DB="test2"
