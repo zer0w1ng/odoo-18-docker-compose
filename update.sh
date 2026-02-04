@@ -17,9 +17,16 @@ RESTART=0
 if (($REMOTE != 0)); then
     echo REMOTE
     # #############################################################
-    DB="demo18"
+    # DB="demo18"
     # MODULES="hr_dashboard"
-    MODULES="heldesk_mgmt_extend"
+    # MODULES="heldesk_mgmt_extend"
+
+    #DB="parkingbees"
+    #MODULES="parkingbees"
+
+    DB="westmead"
+    MODULES="ez_custom_westmead"
+
 
     #MODULES="ez_payroll_manager"
     # MODULES="account_ph_2306_2307"
