@@ -13,4 +13,5 @@ etc/odoo.conf
 */test/*
 *.pyc
 *.log
-addons/hr_dashboard
+ddons/hr_dashboard
+addons-odoo-apps-store/*

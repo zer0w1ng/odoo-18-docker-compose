@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_helpdesk_ticket_task_base_user,access_helpdesk_ticket_task_base_user,model_helpdesk_ticket_task,base.group_user,1,0,0,0
+access_helpdesk_ticket_task_manager,access_helpdesk_ticket_task_manager,model_helpdesk_ticket_task,helpdesk_mgmt.group_helpdesk_manager,1,1,1,1
+access_helpdesk_ticket_line_user,access_helpdesk_ticket_line_user,model_helpdesk_ticket_line,base.group_user,1,1,1,0
+access_helpdesk_ticket_line_mgr,access_helpdesk_ticket_line_mgr,model_helpdesk_ticket_line,base.group_system,1,1,1,1
