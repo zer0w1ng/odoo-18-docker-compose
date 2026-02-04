@@ -1,7 +1,8 @@
 #version: '2'
 services:
   db:
-    image: postgres:17
+    #image: postgres:17
+    build: ./build/db
     user: root
     environment:
       - POSTGRES_USER=odoo
@@ -12,7 +13,8 @@ services:
       - ./postgresql:/var/lib/postgresql/data
 
   app:
-    image: odoo:18
+    #image: odoo:18
+    build: ./build/app
     user: root
     depends_on:
       - db
