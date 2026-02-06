@@ -87,20 +87,20 @@ class Sss(models.Model):
         per = pded.get(code, {}).get("er_amount1", 0.0)
         pec = pded.get(code, {}).get("er_amount2", 0.0)
 
-        #sum old_payslips.de_minimus to be deducted
-        old_payslips = self.env["hr.ph.payslip"].search([
-            ("employee_id", "=", payslip.employee_id.id),
-            ("year_month", "=", payslip.year_month),
-            ("id", "!=", payslip.id),
-            ("date_to", "<", payslip.date_from),
-            ("state", "!=", "draft")
-        ])
-
-        tdeminimis = payslip.de_minimis
-        for p in old_payslips:
-            tdeminimis += p.de_minimis
-            
         if sss_salary_base=='gross':
+            #sum old_payslips.de_minimus to be deducted
+            old_payslips = self.env["hr.ph.payslip"].search([
+                ("employee_id", "=", payslip.employee_id.id),
+                ("year_month", "=", payslip.year_month),
+                ("id", "!=", payslip.id),
+                ("date_to", "<", payslip.date_from),
+                ("state", "!=", "draft")
+            ])
+
+            tdeminimis = payslip.de_minimis
+            for p in old_payslips:
+                tdeminimis += p.de_minimis
+
             ee, er, ec = self.compute_sss_using_table(
                 payslip.gross_pay + pgross_pay - tdeminimis,
                 payslip.payroll_id.date_to)
