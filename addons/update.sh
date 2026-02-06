@@ -16,9 +16,13 @@ RESTART=0
 
 if (($REMOTE != 0)); then
     echo REMOTE
-    DB="pitx"
+    # DB="amber-staging"
+    # MODULES="pd_gis"
     #MODULES="all"
-    MODULES="ez_custom_pitx"
+
+    DB="gis-staging"
+    MODULES="pd_gis"
+
     update_db
 fi
 

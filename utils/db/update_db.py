@@ -12,6 +12,19 @@ def create_db(url, master_password, new_db_name, admin_password, demo_data=False
         print(f"Error: {e}")
 
 
+def delete_db(url, master_password, db_to_delete):
+    db_manager = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/db")
+    try:
+        # This removes the Postgres DB and the Odoo filestore
+        success = db_manager.drop(master_password, db_to_delete)
+        if success:
+            print(f"Database '{db_to_delete}' deleted successfully.")
+        else:
+            print("Failed to delete database. Check permissions.")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
 def install_modules(url, db, modules_to_install, username="admin", password="12345"):
     common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
     uid = common.authenticate(db, username, password, {})
@@ -59,10 +72,15 @@ if __name__=="__main__":
     master_password = "ebfeYUx2i5D2PZ6"
     new_db_name = "gis-staging"
     admin_password = "12345"
+
     if 0:
-        create_db(url, master_password, new_db_name, admin_password)
+        delete_db(url, master_password, new_db_name)
+
+    if 0:
+        create_db(url, master_password, new_db_name, admin_password, demo_data=True)
 
     if 1:
-        modules_to_install = ['contacts', 'sale', 'purchase']
+        # modules_to_install = ['contacts', 'muk_web_theme','web_view_leaflet_map_partner']
+        modules_to_install = ['web_view_leaflet_map']
         install_modules(url, new_db_name, modules_to_install)
 

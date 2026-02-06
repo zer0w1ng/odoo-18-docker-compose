@@ -55,9 +55,76 @@ class Sss(models.Model):
         if len(ps_recs) >= 1:
             #2nd payslip for the month
             _logger.info("create_sss_line_inh: create SSS")
-            return super().create_sss_line(payslip, ptotal)
+            return self.create_sss_line_amber(payslip, ptotal)
         else:
             _logger.info("create_sss_line_inh: return null")
             return []
+
+
+    @api.model
+    def create_sss_line_amber(self, payslip, ptotal):
+        res0 = []
+        if payslip.no_deductions:
+            return res0
+
+        #get salary base
+        sql = """
+            SELECT sss_salary_base 
+            FROM hr_ph_gov_deductions 
+            WHERE (date_from <= %s AND date_to >= %s)
+            LIMIT 1
+        """
+        param = (payslip.payroll_id.date_to, payslip.payroll_id.date_to)
+        self.env.cr.execute(sql, param)
+        res = self.env.cr.fetchone()
+        if not res:
+            raise ValidationError(_("Government deductions not set properly."))
+        sss_salary_base = res[0]
+
+        code = "SSS"
+        pgross_pay, ptaxable, pbasic, pded = ptotal
+        pee = pded.get(code, {}).get("amount", 0.0)
+        per = pded.get(code, {}).get("er_amount1", 0.0)
+        pec = pded.get(code, {}).get("er_amount2", 0.0)
+
+        #sum old_payslips.de_minimus to be deducted
+        old_payslips = self.env["hr.ph.payslip"].search([
+            ("employee_id", "=", payslip.employee_id.id),
+            ("year_month", "=", payslip.year_month),
+            ("id", "!=", payslip.id),
+            ("date_to", "<", payslip.date_from),
+            ("state", "!=", "draft")
+        ])
+
+        tdeminimis = payslip.de_minimis
+        for p in old_payslips:
+            tdeminimis += p.de_minimis
+            
+        if sss_salary_base=='gross':
+            ee, er, ec = self.compute_sss_using_table(
+                payslip.gross_pay + pgross_pay - tdeminimis,
+                payslip.payroll_id.date_to)
+        else:
+            ee, er, ec = self.compute_sss_using_table(
+                payslip.basic_pay + pbasic,
+                payslip.payroll_id.date_to)
+
+        val1 = {
+            'seq': 10,
+            'name': 'SSS Premium',
+            'amount': max(0.0, round(ee - pee, 2)),
+            'er_amount1': max(0.0, round(er - per, 2)),
+            'er_amount2': max(0.0, round(ec - pec, 2)),
+            'code': code,
+            'computed': True,
+            'tax_deductible': True,
+            'payslip_id': payslip.id,
+        }
+
+        if val1["amount"] > 0.0 or val1["er_amount1"] > 0.0 or val1["er_amount2"] > 0.0:
+            #payslip.deduction_line.create(val1)
+            res0.append(val1)
+
+        return res0
 
 
