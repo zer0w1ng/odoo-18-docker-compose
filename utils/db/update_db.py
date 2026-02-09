@@ -77,10 +77,11 @@ if __name__=="__main__":
         delete_db(url, master_password, new_db_name)
 
     if 0:
-        create_db(url, master_password, new_db_name, admin_password, demo_data=True)
+        # create_db(url, master_password, new_db_name, admin_password, demo_data=True)
+        create_db(url, master_password, new_db_name, admin_password, demo_data=False)
 
     if 1:
         # modules_to_install = ['contacts', 'muk_web_theme','web_view_leaflet_map_partner']
-        modules_to_install = ['web_view_leaflet_map']
+        modules_to_install = ['web_view_leaflet_map','pd_gis']
         install_modules(url, new_db_name, modules_to_install)
 
