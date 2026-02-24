@@ -14,6 +14,23 @@
                     invisible="state not in ('draft')"
                     string="Delete Late/UT"/>
             </button>
+
+            <button name="cancel_done" position="attributes">
+                <attribute name="invisible">state not in ('done','released')</attribute>
+            </button>
+
+            <button name="cancel_done" position="before">
+                <button name="action_release" type="object"
+                    confirm="Are you sure you want to release payslips to employees?"
+                    invisible="state not in ('done')"
+                    class="oe_highlight" string="Release"/>
+            </button>
+
         </field>
     </record>
+
+    <record id="ez_payroll.open_payslip" model="ir.actions.act_window">
+        <field name="domain">[('state','=','released')]</field>
+    </record>
+
 </odoo>
