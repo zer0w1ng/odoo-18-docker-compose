@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- 
+        Ticket Screen Patch - Add Void Button
+        
+        Adds a "Void" button next to the delete button for paid orders.
+        The void button only appears when:
+        - Order is PAID (not draft)
+        - Session is still OPEN
+        - Order is not already voided
+    -->
+    
+    <!-- Add void button for desktop list view -->
+    <t t-name="cai_pos.TicketScreenVoidButton" t-inherit="point_of_sale.TicketScreen" t-inherit-mode="extension">
+        <!-- Add void button after the delete button container for desktop list view -->
+        <xpath expr="//div[hasclass('order-row') and not(hasclass('mobileOrderList'))]//div[@name='delete']" position="after">
+            <div t-if="shouldShowVoidButton(order)" 
+                 class="col very-narrow void-button p-2 text-danger fw-bold" 
+                 style="cursor: pointer;"
+                 name="void" 
+                 t-on-click.stop="() => this.onVoidOrder(order)">
+                Void
+            </div>
+        </xpath>
+        
+        <!-- Add void button for mobile view -->
+        <xpath expr="//div[hasclass('mobileOrderList')]//div[@name='delete']" position="after">
+            <div t-if="shouldShowVoidButton(order)" 
+                 class="col very-narrow void-button p-2 rounded-2 ms-2 text-danger fw-bold" 
+                 style="cursor: pointer;"
+                 name="void-mobile" 
+                 t-on-click.stop="() => this.onVoidOrder(order)">
+                Void
+            </div>
+        </xpath>
+    </t>
+
+</templates>

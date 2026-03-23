@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extend the tax form view to show BIR fields -->
+        <record id="view_tax_form_bir_fields" model="ir.ui.view">
+            <field name="name">account.tax.form.bir.compliance</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form"/>
+            <field name="arch" type="xml">
+                <!-- Add BIR fields after the main tax configuration -->
+                <xpath expr="//page[@name='advanced_options']" position="after">
+                    <page string="BIR Compliance (Philippines)" name="bir_compliance" 
+                          invisible="country_code != 'PH'">
+                        <group>
+                            <group string="BIR Tax Classification">
+                                <field name="l10n_ph_bir_tax_type"/>
+                                <field name="l10n_ph_bir_tax_code"/>
+                                <field name="l10n_ph_atc_code"/>
+                                <field name="is_bir_compliant" readonly="1"/>
+                            </group>
+                            <group string="Information">
+                                <div colspan="2" class="alert alert-info" role="alert">
+                                    <h4>BIR Tax Classification Guide</h4>
+                                    <ul>
+                                        <li><strong>VATable (12%):</strong> Standard taxable sales with 12% VAT</li>
+                                        <li><strong>VAT-Exempt:</strong> Sales exempt from VAT (SC/PWD, government, etc.)</li>
+                                        <li><strong>Zero-Rated:</strong> Export sales or sales to PEZA/freeport zones</li>
+                                        <li><strong>Non-VAT:</strong> Sales by non-VAT registered businesses</li>
+                                    </ul>
+                                    <p class="mb-0">
+                                        <i class="fa fa-info-circle"/> Proper classification ensures accurate Z-reading reports and BIR compliance.
+                                    </p>
+                                </div>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Tree view: Add BIR compliance indicator -->
+        <record id="view_tax_tree_bir_indicator" model="ir.ui.view">
+            <field name="name">account.tax.tree.bir.indicator</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="l10n_ph_bir_tax_type" optional="show"/>
+                    <field name="is_bir_compliant" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Search view: Add BIR filter -->
+        <record id="view_account_tax_search_bir" model="ir.ui.view">
+            <field name="name">account.tax.search.bir</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_account_tax_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="BIR Compliant" name="bir_compliant" 
+                            domain="[('is_bir_compliant', '=', True)]"/>
+                    <filter string="VATable" name="bir_vat" 
+                            domain="[('l10n_ph_bir_tax_type', '=', 'vat')]"/>
+                    <filter string="VAT-Exempt" name="bir_exempt" 
+                            domain="[('l10n_ph_bir_tax_type', '=', 'vat_exempt')]"/>
+                    <filter string="Zero-Rated" name="bir_zero" 
+                            domain="[('l10n_ph_bir_tax_type', '=', 'zero_rated')]"/>
+                    <group string="Group By">
+                        <filter string="BIR Tax Type" name="group_bir_type" 
+                                context="{'group_by': 'l10n_ph_bir_tax_type'}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

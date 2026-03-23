@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Delete ALL existing view mode records for this action to ensure clean installation -->
+    <delete model="ir.actions.act_window.view" search="[('act_window_id', '=', ref('action_pos_order_void'))]"/>
+    
+    <!-- Now create fresh view action links -->
+    <record id="action_pos_order_void_view_list" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_pos_order_void_tree"/>
+        <field name="act_window_id" ref="action_pos_order_void"/>
+    </record>
+    
+    <record id="action_pos_order_void_view_form" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_pos_order_void_form"/>
+        <field name="act_window_id" ref="action_pos_order_void"/>
+    </record>
+    
+</odoo>

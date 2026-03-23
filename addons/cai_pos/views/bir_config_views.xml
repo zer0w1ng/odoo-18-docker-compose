@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bir_config_form" model="ir.ui.view">
+        <field name="name">bir.config.form</field>
+        <field name="model">bir.config</field>
+        <field name="arch" type="xml">
+            <form string="BIR Configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Main Store Configuration"/></h1>
+                    </div>
+                    <group>
+                        <group string="Business Information">
+                            <field name="company_id" options="{'no_create': True}"/>
+                            <field name="business_name" placeholder="Registered business name"/>
+                            <field name="business_address" placeholder="Complete business address"/>
+                            <field name="active"/>
+                            <field name="branch_code" placeholder="2-digit branch code for eSales (e.g., 01 for main branch, 02 for branch 2)"/>
+                        </group>
+                        <group string="BIR Registration">
+                            <field name="tin" placeholder="e.g. 123-456-789-000"/>
+                            <field name="permit_number"/>
+                            <field name="permit_date_issued"/>
+                            <field name="permit_valid_until"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="POS Accreditation">
+                            <field name="accreditation_number"/>
+                            <field name="min_number" placeholder="Machine Identification Number"/>
+                            <field name="serial_number" placeholder="POS Serial Number"/>
+                        </group>
+                        <group string="POS Terminal">
+                            <field name="terminal_id" placeholder="Unique terminal ID"/>
+                            <field name="pos_machine_brand" placeholder="e.g. Raspberry Pi 4"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Receipt Numbering">
+                            <field name="receipt_prefix"/>
+                            <field name="current_receipt_number"/>
+                        </group>
+                        <group string="Z-Reading">
+                            <field name="z_reading_counter" readonly="1"/>
+                            <field name="last_z_reading_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="POS Software">
+                            <field name="pos_software_name"/>
+                            <field name="pos_software_version"/>
+                        </group>
+                        <group string="Accreditation Validity">
+                            <field name="valid_from"/>
+                            <field name="valid_until"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_bir_config_tree" model="ir.ui.view">
+        <field name="name">bir.config.list</field>
+        <field name="model">bir.config</field>
+        <field name="arch" type="xml">
+            <list string="BIR Configurations">
+                <field name="name"/>
+                <field name="business_name"/>
+                <field name="company_id"/>
+                <field name="tin"/>
+                <field name="permit_number"/>
+                <field name="permit_valid_until"/>
+                <field name="terminal_id"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_bir_config" model="ir.actions.act_window">
+        <field name="name">BIR Configurations</field>
+        <field name="res_model">bir.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

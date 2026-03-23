@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add BIR Config field to POS Config form -->
+    <record id="view_pos_config_form_bir" model="ir.ui.view">
+        <field name="name">pos.config.form.bir</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add BIR Configuration after the title -->
+            <xpath expr="//div[@id='title']" position="after">
+                <group>
+                    <field name="bir_config_id" 
+                           string="BIR Configuration"
+                           domain="[('company_id', '=', company_id), ('active', '=', True)]"
+                           context="{'default_company_id': company_id}"
+                           options="{'no_create_edit': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

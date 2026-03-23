@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SIMPLIFIED Form View for Testing -->
+    <record id="view_pos_order_void_form_simple" model="ir.ui.view">
+        <field name="name">pos.order.void.form.simple</field>
+        <field name="model">pos.order.void</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Void Transaction - SIMPLE TEST">
+                <header>
+                    <button name="action_approve" string="APPROVE TEST" type="object" 
+                            class="oe_highlight btn-primary"/>
+                    <button name="action_reject" string="REJECT TEST" type="object"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="void_number"/>
+                        <field name="void_date"/>
+                        <field name="state"/>
+                        <field name="voided_by_user_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
+

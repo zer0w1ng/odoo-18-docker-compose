@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    
+    <t t-name="cai_pos.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <!-- Replace the entire receipt content to match the BIR template -->
+        <xpath expr="//div[@class='pos-receipt p-2']" position="replace">
+            <div class="pos-receipt" style="padding: 0px; margin: 0px; position: relative; width: 100%;">
+                <!-- Header Section with BIR Config Data -->
+                <div class="pos-receipt-center-align">
+                    <t t-if="props.data.bir_config">
+                        <!-- Use BIR Config business name -->
+                        <div style="font-weight: bold; font-size: 14px;">
+                            <t t-esc="props.data.bir_config.business_name"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            <t t-esc="props.data.bir_config.business_address"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            TIN: <t t-esc="props.data.bir_config.tin"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            MIN NO.: <t t-esc="props.data.bir_config.min_number or 'N/A'"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            SERIAL NO.: <t t-esc="props.data.bir_config.serial_number or 'N/A'"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            Permit No.: <t t-esc="props.data.bir_config.permit_number"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            Accreditation No.: <t t-esc="props.data.bir_config.accreditation_number or 'N/A'"/>
+                        </div>
+                        <div style="font-size: 10px;"> 
+                            <t t-esc="props.data.bir_config.pos_software_name"/> 
+                            <t t-esc="props.data.bir_config.pos_software_version"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <!-- Fallback to company data if no BIR config -->
+                        <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/></div>
+                        <div style="font-size: 9px;">
+                            MIN NO.: <t t-esc="props.data.headerData.company.vat or 'N/A'"/>
+                        </div>
+                        <div style="font-size: 9px;">
+                            SERIAL NO.: <t t-esc="props.data.headerData.company.company_registry or 'N/A'"/>
+                        </div>
+                        <div style="font-size: 10px"> 
+                            Odoo POS v18.0
+                        </div>
+                    </t>
+                    <div style="font-weight: bold; font-size: 14px;">** SALES INVOICE **</div>
+                    <div style="font-size: 14px; font-weight: bold">
+                        SI #: <t t-esc="props.data.name"/>
+                    </div>
+                    <div t-if="props.data.is_reprint" style="font-size: 14px;">** REPRINT **</div>
+                </div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
+                <!-- Transaction Details -->
+                <div style="font-size: 12px;">
+                    Transaction #: <t t-esc="props.data.name"/>
+                    <br/>
+                    Date: <t t-esc="props.data.date"/>
+                    <t t-if="props.data.bir_config and props.data.bir_config.terminal_id">
+                        <br/>
+                        Terminal: <t t-esc="props.data.bir_config.terminal_id"/>
+                    </t>
+                </div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
+                <!-- Order Lines -->
+                <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                        <div style="font-size: 13px; flex: 1; text-transform: uppercase;">
+                            <t t-esc="line.productName"/>
+                            <t t-if="line.qty != '1'">
+                                <br/>
+                                <span style="margin-left: 10px;">
+                                    <t t-esc="line.qty"/> x <t t-esc="line.price_without_discount || line.unitPrice"/>
+                                </span>
+                            </t>
+                        </div>
+                        <div style="text-align: right; min-width: 60px;">
+                            <!-- Show original price before discount -->
+                            <t t-esc="line.price_without_discount || line.price"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
+                <!-- BIR-COMPLIANT COMPUTATION DISPLAY -->
+                <!-- According to BIR Revenue Regulations No. 5-2017:
+                     For PWD/SC: 1) Remove VAT first (÷1.12), 2) Then apply discount on VAT-exempt amount -->
+                
+                <t t-if="props.data.bir_discount and props.data.bir_discount.is_vat_exempt and props.data.bir_discount.discountable_gross_sales">
+                    <!-- For VAT-Exempt BIR Discounts (PWD/SC) -->
+                    <!-- CORRECT BIR FORMULA: Amount Due = (Gross ÷ 1.12) × (1 - Discount%) -->
+                    
+                    <!-- Use pre-calculated gross sales from DISCOUNTABLE items only -->
+                    <t t-set="grossSales" t-value="props.data.bir_discount.discountable_gross_sales"/>
+                    
+                    <!-- Calculate VAT-Exempt Sales (Gross ÷ 1.12) -->
+                    <t t-set="vatExemptSales" t-value="grossSales / 1.12"/>
+                    
+                    <!-- Calculate discount on VAT-Exempt amount (not gross amount) -->
+                    <t t-set="pwdDiscount" t-value="vatExemptSales * (props.data.bir_discount.percent / 100)"/>
+                    
+                    <!-- Display BIR-Compliant Breakdown -->
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>SUBTOTAL:</span>
+                        <span><t t-esc="props.formatCurrency(grossSales)"/></span>
+                    </div>
+                    
+                    <div style="border-top: 0.5px solid #000; margin: 5px 0; height: 0; transform: scaleY(0.5);"></div>
+                    
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>VAT-Exempt Sales:</span>
+                        <span><t t-esc="props.formatCurrency(vatExemptSales)"/></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>
+                            Less: <t t-esc="props.data.bir_discount.percent"/>% <t t-esc="props.data.bir_discount.name"/>
+                        </span>
+                        <span>-<t t-esc="props.formatCurrency(pwdDiscount)"/></span>
+                    </div>
+                    
+                    <!-- ID Information for SC/PWD if provided -->
+                    <t t-if="props.data.bir_discount.id_number">
+                        <div style="font-size: 10px; margin-left: 10px; margin-bottom: 5px; font-style: italic;">
+                            <t t-esc="props.data.bir_discount.id_type"/>: <t t-esc="props.data.bir_discount.id_number"/>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <!-- For Regular Orders (No BIR Discount or Non-VAT-Exempt Discounts) -->
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>Subtotal:</span>
+                        <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
+                    </div>
+                    
+                    <!-- Show BIR Discount for non-VAT-exempt discounts -->
+                    <t t-if="props.data.bir_discount and props.data.bir_discount.amount and props.data.bir_discount.amount > 0">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                            <span>
+                                Less: <t t-esc="props.data.bir_discount.name"/> 
+                            </span>
+                            <span>-<t t-esc="props.formatCurrency(props.data.bir_discount.amount)"/></span>
+                        </div>
+                        <!-- ID Information if provided -->
+                        <t t-if="props.data.bir_discount.id_number">
+                            <div style="font-size: 10px; margin-left: 10px; margin-bottom: 5px; font-style: italic;">
+                                <t t-esc="props.data.bir_discount.id_type"/>: <t t-esc="props.data.bir_discount.id_number"/>
+                            </div>
+                        </t>
+                    </t>
+                </t>
+
+                <!-- VAT Details - BIR-COMPLIANT CALCULATION -->
+                <t t-set="vatBreakdown" t-value="props.data.bir_vat_breakdown or {}"/>
+                <t t-set="vatable_sales" t-value="vatBreakdown.vatable_sales or 0"/>
+                <t t-set="vat_amount" t-value="vatBreakdown.vat_amount or 0"/>
+                <t t-set="vat_exempt" t-value="vatBreakdown.vat_exempt_sales or 0"/>
+                <t t-set="zero_rated" t-value="vatBreakdown.zero_rated_sales or 0"/>
+                
+                <!-- For VAT-exempt BIR discounts (PWD/SC), calculate correct VAT-exempt sales -->
+                <t t-if="props.data.bir_discount and props.data.bir_discount.is_vat_exempt">
+                    <t t-set="finalAmount" t-value="props.data.taxTotals.order_total"/>
+                    <t t-set="vat_exempt" t-value="finalAmount"/>
+                    <t t-set="vat_amount" t-value="0"/>
+                    <t t-set="vatable_sales" t-value="0"/>
+                </t>
+                
+                <!-- Fallback: If no breakdown and no VAT-exempt discount, calculate 12% VAT -->
+                <t t-if="vatable_sales == 0 and vat_exempt == 0 and zero_rated == 0 and (!props.data.bir_discount or !props.data.bir_discount.is_vat_exempt)">
+                    <t t-set="totalAmount" t-value="props.data.taxTotals.order_total"/>
+                    <t t-set="vat_amount" t-value="totalAmount * 0.12 / 1.12"/>
+                    <t t-set="vatable_sales" t-value="totalAmount - vat_amount"/>
+                </t>
+                
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                    <span>Price Net of VAT:</span>
+                    <span><t t-esc="props.formatCurrency(vatable_sales)"/></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                    <span>VAT Amount:</span>
+                    <span><t t-esc="props.formatCurrency(vat_amount)"/></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
+                    <span>TOTAL AMOUNT DUE:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
+                </div>
+
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
+                <!-- Payment Lines -->
+                <div t-foreach="props.data.paymentlines" t-as="line" t-key="line_index">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
+                        <span><t t-esc="line.name"/>:</span>
+                        <span><t t-esc="props.formatCurrency(line.amount)"/></span>
+                    </div>
+                </div>
+
+                <div t-if="props.data.show_change" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
+                    <span>Change:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.order_change)"/></span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
+                    <span>TOTAL PAID:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
+                </div>
+
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
+                <!-- VAT Breakdown - Use actual tax data -->
+                <div style="font-size: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>VATable Sales:</span>
+                        <span><t t-esc="props.formatCurrency(vatable_sales)"/></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>VAT Amount:</span>
+                        <span><t t-esc="props.formatCurrency(vat_amount)"/></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>VAT Exempt Sale:</span>
+                        <span><t t-esc="props.formatCurrency(vat_exempt)"/></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Zero-Rated Sale:</span>
+                        <span><t t-esc="props.formatCurrency(zero_rated)"/></span>
+                    </div>
+                </div>
+
+                <!-- Footer Information -->
+                <div style="font-size: 10px; text-align: center; margin-top: 15px;">
+                    <t t-if="props.data.bir_config">
+                        <div><t t-esc="props.data.bir_config.business_name"/></div>
+                        <div><t t-esc="props.data.bir_config.business_address"/></div>
+                        <div>VAT REG TIN: <t t-esc="props.data.bir_config.tin"/></div>
+                        <div>Acc. No.: <t t-esc="props.data.bir_config.accreditation_number or 'N/A'"/></div>
+                        <div>Date/Time issued: <t t-esc="props.data.date"/></div>
+                        <div>Permit No.: <t t-esc="props.data.bir_config.permit_number"/></div>
+                    </t>
+                    <t t-else="">
+                        <div><t t-esc="props.data.headerData.company.name"/></div>
+                        <div><t t-esc="props.data.headerData.company.street or ''"/></div>
+                        <div><t t-esc="props.data.headerData.company.city or ''"/></div>
+                        <div>VAT REG TIN: <t t-esc="props.data.headerData.company.vat or 'N/A'"/></div>
+                        <div>Date/Time issued: <t t-esc="props.data.date"/></div>
+                    </t>
+                </div>
+
+                <div style="border-top: 1px dashed #000; margin: 15px 0;"></div>
+
+                <!-- Sales Invoice Footer -->
+                <div style="font-weight: bold; text-align: center; font-size: 12px;">
+                    THIS SERVES AS YOUR SALES INVOICE
+                </div>
+            </div>
+        </xpath>
+    </t>
+    
+</templates>

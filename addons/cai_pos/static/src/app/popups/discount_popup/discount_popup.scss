@@ -1,0 +1,47 @@
+.bir-discount-popup {
+    .discount-types-container {
+        .discount-option {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+            
+            &.btn-success {
+                border-color: #28a745;
+                box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+            }
+        }
+    }
+    
+    .id-verification-section {
+        animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .selected-discount-summary {
+        animation: pulse 0.5s ease;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.02);
+        }
+    }
+}
+

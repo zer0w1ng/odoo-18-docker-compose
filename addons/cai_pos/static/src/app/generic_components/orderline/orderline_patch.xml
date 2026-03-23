@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    
+    <!-- Hide the misleading "price_without_discount With a X% discount" line from orderlines
+         This is misleading for BIR VAT-exempt discounts (SC/PWD) because it shows a huge 
+         percentage (28.571%) that includes both VAT removal and the actual discount -->
+    <t t-name="cai_pos.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <!-- Target the discount line - it's the li containing an em element with "% " text -->
+        <xpath expr="//ul[hasclass('info-list')]/li[em]" position="attributes">
+            <attribute name="t-if">false</attribute>
+        </xpath>
+    </t>
+
+</templates>

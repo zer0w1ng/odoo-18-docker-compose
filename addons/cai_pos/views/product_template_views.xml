@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add BIR Discount Settings to Product Template Form -->
+    <record id="product_template_form_view_inherit_bir" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.bir</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add to Sales tab -->
+            <xpath expr="//page[@name='sales']" position="inside">
+                <group string="BIR Discount Settings" name="bir_discount_settings">
+                    <field name="is_bir_discountable"/>
+                    <field name="bir_discount_exclusion_reason" 
+                           invisible="is_bir_discountable"
+                           string="Exclusion Reason"
+                           placeholder="e.g., Already at maximum retail price per DOH Circular"/>
+                    <field name="bir_discountable_notes" 
+                           placeholder="Additional notes about PWD/SC discount eligibility"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add BIR Discount column to Product Template List View (Optional) -->
+    <record id="product_template_tree_view_inherit_bir" model="ir.ui.view">
+        <field name="name">product.template.tree.inherit.bir</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="is_bir_discountable" 
+                       string="PWD/SC" 
+                       widget="boolean_toggle"
+                       optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add BIR Discount Settings to Product Variant Form (if variant-specific) -->
+    <record id="product_product_form_view_inherit_bir" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.bir</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add to General Information tab -->
+            <xpath expr="//page[@name='general_information']" position="inside">
+                <group string="BIR Discount Settings" name="bir_discount_settings">
+                    <field name="is_bir_discountable"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add search filter for PWD/SC Discountable products -->
+    <record id="product_template_search_view_inherit_bir" model="ir.ui.view">
+        <field name="name">product.template.search.inherit.bir</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="after">
+                <separator/>
+                <filter string="PWD/SC Discountable" 
+                        name="bir_discountable" 
+                        domain="[('is_bir_discountable', '=', True)]"/>
+                <filter string="Not PWD/SC Discountable" 
+                        name="bir_not_discountable" 
+                        domain="[('is_bir_discountable', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+

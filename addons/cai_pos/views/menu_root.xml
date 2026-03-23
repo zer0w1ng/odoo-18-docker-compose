@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        ROOT MENUS - Load first (no action references)
+        These create the menu structure that other files can reference
+    -->
+    
+    <!-- Main BIR Compliance menu under Point of Sale -->
+    <menuitem id="menu_pos_bir_root" 
+              name="BIR Compliance" 
+              parent="point_of_sale.menu_point_root" 
+              sequence="2"/>
+    
+    <!-- Sub-menu containers (no actions, just structure) -->
+    <menuitem id="menu_pos_bir_reports" 
+              name="BIR Reports"
+              parent="menu_pos_bir_root" 
+              sequence="5"/>
+    
+    <menuitem id="menu_pos_bir_transactions" 
+              name="Transactions"
+              parent="menu_pos_bir_root" 
+              sequence="10"/>
+
+</odoo>
+

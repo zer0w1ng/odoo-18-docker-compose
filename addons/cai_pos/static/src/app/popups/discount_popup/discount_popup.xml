@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="cai_pos.BIRDiscountPopup">
+        <Dialog title="props.title" size="'lg'">
+            <t t-set-slot="header">
+                <h4 class="modal-title">
+                    <i class="fa fa-percent"/> <t t-esc="props.title"/>
+                </h4>
+            </t>
+
+            <!-- Discount Type Selection -->
+            <div class="discount-types-container">
+                <h5 class="mb-3">Select Discount Type:</h5>
+                <div class="d-flex flex-wrap justify-content-center">
+                    <t t-foreach="discountTypes" t-as="discount" t-key="discount.id">
+                        <button 
+                            t-att-class="getDiscountClass(discount)"
+                            t-on-click="() => this.selectDiscount(discount)"
+                            style="min-width: 150px;">
+                            <div>
+                                <i t-att-class="'fa ' + getDiscountIcon(discount)" style="font-size: 2em;"/>
+                            </div>
+                            <div class="mt-2">
+                                <strong><t t-esc="discount.name"/></strong>
+                            </div>
+                            <div class="small">
+                                <t t-esc="discount.discount_percent"/>% OFF
+                            </div>
+                            <div t-if="discount.is_vat_exempt" class="small text-danger">
+                                VAT-Exempt
+                            </div>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <!-- ID Verification Section -->
+            <div t-if="state.showIdFields" class="id-verification-section mt-4 p-3 border rounded bg-light">
+                <h5 class="mb-3">
+                    <i class="fa fa-id-card"/> ID Verification Required
+                </h5>
+                <div class="alert alert-warning" role="alert">
+                    <i class="fa fa-exclamation-triangle"/> Please verify customer's valid government-issued ID
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="idType"><strong>ID Type:</strong></label>
+                    <input 
+                        type="text"
+                        id="idType"
+                        class="form-control"
+                        t-model="state.idType"
+                        t-on-change="updateIdType"
+                        placeholder="e.g., Senior Citizen ID, PWD ID"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="idNumber"><strong>ID Number:</strong> <span class="text-danger">*</span></label>
+                    <input 
+                        type="text"
+                        id="idNumber"
+                        class="form-control"
+                        t-model="state.idNumber"
+                        t-on-change="updateIdNumber"
+                        placeholder="Enter ID number"
+                        required="required"/>
+                    <small class="form-text text-muted">
+                        Required for BIR compliance and audit purposes
+                    </small>
+                </div>
+            </div>
+
+            <!-- Selected Discount Summary -->
+            <div t-if="state.selectedDiscount" class="selected-discount-summary mt-4 p-3 border rounded bg-success text-white">
+                <h6><i class="fa fa-check-circle"/> Selected Discount:</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong><t t-esc="state.selectedDiscount.name"/></strong>
+                        <br/>
+                        <small>Code: <t t-esc="state.selectedDiscount.code"/></small>
+                    </div>
+                    <div class="text-right">
+                        <h4 class="mb-0"><t t-esc="state.selectedDiscount.discount_percent"/>% OFF</h4>
+                        <small t-if="state.selectedDiscount.is_vat_exempt">VAT-Exempt</small>
+                    </div>
+                </div>
+            </div>
+
+            <t t-set-slot="footer">
+                <button class="btn btn-lg btn-secondary" t-on-click="cancel">
+                    <i class="fa fa-times"/> Cancel
+                </button>
+                <button class="btn btn-lg btn-primary" t-on-click="confirm">
+                    <i class="fa fa-check"/> Apply Discount
+                </button>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>
+

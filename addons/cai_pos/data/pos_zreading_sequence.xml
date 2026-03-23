@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sequence for Z-Reading Numbers -->
+    <record id="sequence_pos_zreading" model="ir.sequence">
+        <field name="name">POS Z-Reading Sequence</field>
+        <field name="code">pos.zreading</field>
+        <field name="prefix">Z-</field>
+        <field name="padding">4</field>
+        <field name="number_increment">1</field>
+        <field name="implementation">standard</field>
+    </record>
+</odoo>
+

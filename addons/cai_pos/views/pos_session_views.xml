@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit POS Session Form to add X-Reading button -->
+    <record id="view_pos_session_form_inherit_xreading" model="ir.ui.view">
+        <field name="name">pos.session.form.inherit.xreading</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="arch" type="xml">
+            <!-- Add X-Reading button before the closing control button -->
+            <xpath expr="//header/button[@name='action_pos_session_closing_control']" position="before">
+                <button name="action_generate_xreading" 
+                        string="Generate X-Reading" 
+                        type="object" 
+                        class="btn-primary"
+                        icon="fa-file-text-o"
+                        help="Generate a non-reset sales summary report (works for both open and closed sessions)"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

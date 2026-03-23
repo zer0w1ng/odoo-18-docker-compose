@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Generate Z-Reading Wizard Form -->
+    <record id="view_generate_zreading_wizard_form" model="ir.ui.view">
+        <field name="name">generate.zreading.wizard.form</field>
+        <field name="model">generate.zreading.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Z-Reading">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Generate Z-Reading Report</h1>
+                        <p style="color: #666; margin-top: 10px;">
+                            Z-Reading is a daily sales summary that resets counters.<br/>
+                            Can only be generated <strong>once per date</strong> after <strong>all sessions are closed</strong>.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="reading_date" widget="date" 
+                                   options="{'datepicker': {'maxDate': 'today'}}"
+                                   required="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Summary Information" col="4">
+                        <field name="session_count" readonly="1"/>
+                        <field name="order_count" readonly="1"/>
+                        <field name="closed_session_count" readonly="1" 
+                               decoration-success="closed_session_count &gt; 0"/>
+                        <field name="voided_count" readonly="1" 
+                               invisible="voided_count == 0"/>
+                        <field name="open_session_count" readonly="1" 
+                               decoration-danger="open_session_count &gt; 0"
+                               decoration-success="open_session_count == 0"/>
+                        <field name="total_sales" readonly="1" widget="monetary"/>
+                    </group>
+
+                    <separator string="Status"/>
+                    <field name="warning_message" readonly="1" nolabel="1"/>
+                </sheet>
+
+                <footer>
+                    <button name="action_generate_zreading" 
+                            string="Generate Z-Reading" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="not can_generate or zreading_exists"
+                            confirm="Are you sure you want to generate Z-reading? This action cannot be undone and will increment the Z-counter."/>
+                    
+                    <button name="action_view_existing_zreading" 
+                            string="View Existing Z-Reading" 
+                            type="object" 
+                            class="btn-secondary"
+                            invisible="not zreading_exists"/>
+                    
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_generate_zreading_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Z-Reading</field>
+        <field name="res_model">generate.zreading.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_pos_zreading"/>
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>
+

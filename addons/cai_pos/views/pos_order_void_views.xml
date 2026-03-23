@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========== Void Record Views ========== -->
+    
+    <!-- List View (renamed from tree in Odoo 18) -->
+    <record id="view_pos_order_void_tree" model="ir.ui.view">
+        <field name="name">pos.order.void.tree</field>
+        <field name="model">pos.order.void</field>
+        <field name="arch" type="xml">
+            <list string="Void Transactions" decoration-danger="state=='rejected'" decoration-warning="state=='pending_approval'" decoration-success="state=='approved'" decoration-muted="state=='cancelled'">
+                <field name="void_number"/>
+                <field name="void_date"/>
+                <field name="original_order_name"/>
+                <field name="bir_original_receipt_number"/>
+                <field name="amount_voided" sum="Total Voided"/>
+                <field name="void_reason"/>
+                <field name="voided_by_user_id"/>
+                <field name="supervisor_approval_id"/>
+                <field name="session_id"/>
+                <field name="state" widget="badge" decoration-danger="state=='rejected'" decoration-warning="state=='pending_approval'" decoration-success="state=='approved'" decoration-muted="state=='cancelled'"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="view_pos_order_void_form" model="ir.ui.view">
+        <field name="name">pos.order.void.form</field>
+        <field name="model">pos.order.void</field>
+        <field name="arch" type="xml">
+            <form string="Void Transaction" create="false" edit="false">
+                <header>
+                    <button name="action_approve" string="Approve" type="object" 
+                            class="oe_highlight" 
+                            invisible="state != 'pending_approval'"
+                            groups="point_of_sale.group_pos_manager"/>
+                    <button name="action_reject" string="Reject" type="object" 
+                            invisible="state != 'pending_approval'"
+                            groups="point_of_sale.group_pos_manager"/>
+                    <button name="action_print_void_receipt" string="Print Void Receipt" type="object" 
+                            class="oe_highlight" 
+                            invisible="state != 'approved'"/>
+                    <button name="action_view_original_order" string="View Original Order" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending_approval,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_original_order" icon="fa-shopping-cart">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Original</span>
+                                <span class="o_stat_text">Order</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="void_number" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="void_info" string="Void Information">
+                            <field name="void_date"/>
+                            <field name="void_reason"/>
+                            <field name="void_reason_details"/>
+                            <field name="is_same_day" widget="boolean_toggle"/>
+                            <field name="void_age_hours" widget="float_time"/>
+                        </group>
+                        <group name="original_transaction" string="Original Transaction">
+                            <field name="original_order_id" readonly="1"/>
+                            <field name="original_order_name" readonly="1"/>
+                            <field name="bir_original_receipt_number" readonly="1"/>
+                            <field name="session_id" readonly="1"/>
+                            <field name="config_id" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group name="financial" string="Financial Details">
+                            <field name="amount_voided" readonly="1"/>
+                            <field name="amount_tax" readonly="1"/>
+                            <field name="amount_discount" readonly="1"/>
+                        </group>
+                        <group name="bir_discount" string="BIR Discount (if applicable)">
+                            <field name="had_bir_discount" widget="boolean_toggle" readonly="1"/>
+                            <field name="bir_discount_type_id" readonly="1" invisible="not had_bir_discount"/>
+                            <field name="bir_discount_amount" readonly="1" invisible="not had_bir_discount"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group name="authorization" string="Authorization">
+                            <field name="voided_by_user_id" readonly="1"/>
+                            <field name="requires_supervisor_approval" readonly="1" widget="boolean_toggle"/>
+                            <field name="supervisor_approval_id" readonly="1"/>
+                            <field name="supervisor_approval_date" readonly="1"/>
+                        </group>
+                        <group name="bir_config" string="BIR Configuration">
+                            <field name="bir_config_id" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="order_line_count" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes or comments..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_pos_order_void_search" model="ir.ui.view">
+        <field name="name">pos.order.void.search</field>
+        <field name="model">pos.order.void</field>
+        <field name="arch" type="xml">
+            <search string="Search Void Transactions">
+                <field name="void_number"/>
+                <field name="original_order_name"/>
+                <field name="bir_original_receipt_number"/>
+                <field name="voided_by_user_id"/>
+                <field name="session_id"/>
+                <field name="void_reason"/>
+                
+                <filter string="Pending Approval" name="pending" domain="[('state', '=', 'pending_approval')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <filter string="Same Day" name="same_day" domain="[('is_same_day', '=', True)]"/>
+                <filter string="With BIR Discount" name="with_bir_discount" domain="[('had_bir_discount', '=', True)]"/>
+                
+                <separator/>
+                <filter string="Today" name="today" domain="[('void_date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), ('void_date', '&lt;=', datetime.datetime.combine(context_today(), datetime.time(23,59,59)))]"/>
+                <filter string="This Week" name="this_week" domain="[('void_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('void_date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter string="This Month" name="this_month" domain="[('void_date', '&gt;=', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Session" name="group_session" context="{'group_by': 'session_id'}"/>
+                    <filter string="POS" name="group_config" context="{'group_by': 'config_id'}"/>
+                    <filter string="Void Reason" name="group_reason" context="{'group_by': 'void_reason'}"/>
+                    <filter string="Voided By" name="group_user" context="{'group_by': 'voided_by_user_id'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Void Date" name="group_date" context="{'group_by': 'void_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_pos_order_void" model="ir.actions.act_window">
+        <field name="name">Void Transactions</field>
+        <field name="res_model">pos.order.void</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pos_order_void_search"/>
+        <field name="context">{'search_default_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No void transactions found
+            </p>
+            <p>
+                Void transactions are permanently recorded here per BIR requirements.
+                They are excluded from sales totals but maintained for audit trail.
+            </p>
+        </field>
+    </record>
+    
+    <!-- ========== Void Wizard Views ========== -->
+    
+    <!-- Wizard Form View -->
+    <record id="view_pos_order_void_wizard_form" model="ir.ui.view">
+        <field name="name">pos.order.void.wizard.form</field>
+        <field name="model">pos.order.void.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Void Transaction">
+                <div class="alert alert-warning" role="alert" invisible="not warning_message">
+                    <field name="warning_message"/>
+                </div>
+                
+                <group>
+                    <group string="Order Information">
+                        <field name="order_name" readonly="1"/>
+                        <field name="order_date" readonly="1"/>
+                        <field name="amount_total" readonly="1" widget="monetary"/>
+                        <field name="session_id" readonly="1"/>
+                    </group>
+                    <group string="Void Reason">
+                        <field name="void_reason" required="1"/>
+                        <field name="void_reason_details" required="1"/>
+                    </group>
+                </group>
+                
+                <group string="Additional Information">
+                    <field name="notes" placeholder="Any additional notes..." colspan="2" nolabel="1"/>
+                    <p colspan="2" class="text-muted">
+                        <i>Note: After creating this void request, approve it from: BIR Compliance → Void Transactions</i>
+                    </p>
+                </group>
+                
+                <footer>
+                    <button string="Void Transaction" name="action_void_order" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- ========== Extended POS Order Views ========== -->
+    
+    <!-- Add void button to POS Order form view -->
+    <record id="view_pos_order_form_void_button" model="ir.ui.view">
+        <field name="name">pos.order.form.void.button</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <!-- Change "Return Products" button label to "Return/Refund" -->
+            <xpath expr="//button[@name='refund']" position="attributes">
+                <attribute name="string">Return/Refund</attribute>
+            </xpath>
+            
+            <!-- Add void button after refund button -->
+            <!-- Note: can_be_voided field is auto-loaded by Odoo for the invisible attribute -->
+            <xpath expr="//button[@name='refund']" position="after">
+                <button name="action_void_order" string="Void Transaction" type="object"
+                        class="btn-danger"
+                        invisible="not can_be_voided"
+                        confirm="Are you sure you want to void this transaction? This action will create a permanent void record for BIR audit trail."
+                        groups="point_of_sale.group_pos_user"/>
+            </xpath>
+            
+            <!-- Show void banner if voided -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger" role="alert" invisible="not is_voided">
+                    <strong>⚠️ VOIDED TRANSACTION</strong><br/>
+                    This order has been voided on <field name="void_date" readonly="1"/>.
+                    <button name="action_view_void_record" string="View Void Record" type="object" class="btn-link"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Add void info to tree view -->
+    <record id="view_pos_order_tree_void_column" model="ir.ui.view">
+        <field name="name">pos.order.tree.void.column</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="is_voided" widget="boolean_toggle" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Add void filter to search view -->
+    <record id="view_pos_order_search_void_filter" model="ir.ui.view">
+        <field name="name">pos.order.search.void.filter</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_search"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <filter string="Voided" name="voided" domain="[('is_voided', '=', True)]"/>
+                <filter string="Not Voided" name="not_voided" domain="[('is_voided', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+    
+</odoo>
+

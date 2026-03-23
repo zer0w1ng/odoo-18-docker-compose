@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Add X-Reading button to navbar dropdown menu -->
+    <t t-name="point_of_sale.Navbar" t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+        <xpath expr="//div[@class='p-2 pos-burger-menu-items']" position="inside">
+            <DropdownItem onSelected="() => this.generateXReading()">
+                X-Reading (Sales Report)
+            </DropdownItem>
+        </xpath>
+    </t>
+
+</templates>
+

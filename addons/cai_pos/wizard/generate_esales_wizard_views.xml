@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Generate eSales Report Wizard Form -->
+    <record id="view_generate_esales_wizard_form" model="ir.ui.view">
+        <field name="name">generate.esales.wizard.form</field>
+        <field name="model">generate.esales.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate eSales Report">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Generate BIR eSales Report</h1>
+                        <p style="color: #666; margin-top: 10px;">
+                            Generate monthly eSales CSV report for BIR submission.<br/>
+                            <strong>Submission Deadlines:</strong> 8th (even TIN) or 10th (odd TIN) of following month.
+                        </p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="report_month" widget="date" 
+                                   options="{'datepicker': {'startView': 'months', 'minViewMode': 'months'}}"
+                                   required="1"/>
+                            <field name="generation_method" widget="radio"
+                                   help="Z-Readings: Uses existing Z-reading data. Orders: Generates from orders directly. From Specific Order: For testing - start from a selected order."/>
+                            <field name="bir_config_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="starting_order_id" 
+                                   invisible="generation_method != 'from_order'"
+                                   required="generation_method == 'from_order'"
+                                   domain="[('state', 'in', ['paid', 'done', 'invoiced']), ('is_voided', '=', False), ('company_id', '=', company_id)]"
+                                   options="{'no_create': True}"
+                                   context="{'search_default_paid': 1}"/>
+                            <field name="starting_order_date" 
+                                   invisible="generation_method != 'from_order' or not starting_order_id"/>
+                            <field name="starting_order_amount" 
+                                   invisible="generation_method != 'from_order' or not starting_order_id"
+                                   widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group string="Summary Information" col="4">
+                        <field name="zreading_count" readonly="1"/>
+                        <field name="days_with_sales" readonly="1"/>
+                        <field name="transaction_count" readonly="1"/>
+                        <field name="total_sales" readonly="1" widget="monetary"/>
+                    </group>
+
+                    <separator string="Status"/>
+                    <field name="warning_message" readonly="1" nolabel="1"/>
+                </sheet>
+
+                <footer>
+                    <button name="action_generate_esales" 
+                            string="Generate eSales Report" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="not can_generate or esales_exists"
+                            confirm="Generate eSales report for this month? Daily sales data will be created from the selected source."/>
+                    
+                    <button name="action_view_existing_esales" 
+                            string="View Existing Report" 
+                            type="object" 
+                            class="btn-secondary"
+                            invisible="not esales_exists"/>
+                    
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_generate_esales_wizard" model="ir.actions.act_window">
+        <field name="name">Generate eSales Report</field>
+        <field name="res_model">generate.esales.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_pos_esales_report"/>
+        <field name="binding_view_types">form</field>
+    </record>
+</odoo>
+

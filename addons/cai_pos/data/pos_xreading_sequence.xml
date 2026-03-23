@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sequence for X-Reading Numbers -->
+    <record id="sequence_pos_xreading" model="ir.sequence">
+        <field name="name">POS X-Reading Sequence</field>
+        <field name="code">pos.xreading</field>
+        <field name="prefix">X</field>
+        <field name="padding">4</field>
+        <field name="number_increment">1</field>
+        <field name="number_next">1</field>
+        <field name="implementation">standard</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>
+

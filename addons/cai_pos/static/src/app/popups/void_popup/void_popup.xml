@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- VoidOrderPopup Template - Simple Void Interface -->
+    <t t-name="cai_pos.VoidOrderPopup">
+        <Dialog title="'Void Transaction'" size="'md'">
+            <div class="void-popup-content">
+                <!-- Order Info Header -->
+                <div class="alert alert-info mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Order:</strong> <t t-esc="order.name or order.pos_reference"/>
+                        </div>
+                        <div>
+                            <strong>Amount:</strong> 
+                            <t t-esc="pos.env.utils.formatCurrency(order.amount_total)"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error Message -->
+                <t t-if="state.errorMessage">
+                    <div class="alert alert-danger">
+                        <i class="fa fa-times-circle me-2"/>
+                        <span t-esc="state.errorMessage"/>
+                    </div>
+                </t>
+                
+                <!-- Void Form -->
+                <div>
+                    <!-- Reason Selection -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Void Reason <span class="text-danger">*</span>
+                        </label>
+                        <select 
+                            class="form-select" 
+                            t-on-change="onReasonChange"
+                            t-att-disabled="state.isProcessing">
+                            <option value="">-- Select Reason --</option>
+                            <t t-foreach="voidReasons" t-as="reason" t-key="reason.value">
+                                <option 
+                                    t-att-value="reason.value"
+                                    t-att-selected="state.voidReason === reason.value">
+                                    <t t-esc="reason.label"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    
+                    <!-- Detailed Explanation -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">
+                            Details <span class="text-danger">*</span>
+                        </label>
+                        <textarea 
+                            class="form-control" 
+                            rows="2"
+                            t-att-value="state.voidReasonDetails"
+                            t-on-input="onDetailsChange"
+                            t-att-disabled="state.isProcessing"
+                            placeholder="Enter reason details..."/>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer Buttons -->
+            <t t-set-slot="footer">
+                <div class="d-flex justify-content-between w-100">
+                    <button 
+                        class="btn btn-secondary" 
+                        t-on-click="cancel"
+                        t-att-disabled="state.isProcessing">
+                        Cancel
+                    </button>
+                    
+                    <button 
+                        class="btn btn-danger" 
+                        t-on-click="confirmVoid"
+                        t-att-disabled="state.isProcessing or !state.voidReason or !state.voidReasonDetails">
+                        <t t-if="state.isProcessing">
+                            <i class="fa fa-spinner fa-spin me-1"/>
+                            Processing...
+                        </t>
+                        <t t-else="">
+                            Void Order
+                        </t>
+                    </button>
+                </div>
+            </t>
+        </Dialog>
+    </t>
+
+</templates>

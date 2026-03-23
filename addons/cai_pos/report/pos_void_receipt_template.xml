@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Definition -->
+    <record id="action_report_pos_void_receipt" model="ir.actions.report">
+        <field name="name">Void Receipt</field>
+        <field name="model">pos.order.void</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">cai_pos.report_pos_void_receipt_document</field>
+        <field name="report_file">cai_pos.report_pos_void_receipt_document</field>
+        <field name="binding_model_id" ref="model_pos_order_void"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Report Template -->
+    <template id="report_pos_void_receipt_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="void">
+                <div class="page" style="font-family: monospace; font-size: 12px; max-width: 80mm; margin: 0 auto;">
+                    <t t-set="config" t-value="void.bir_config_id"/>
+                    <t t-set="company" t-value="void.company_id"/>
+                    <t t-set="order" t-value="void.original_order_id"/>
+                    
+                    <!-- Header -->
+                    <div class="text-center" style="border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div style="font-size: 18px; font-weight: bold;">VOID RECEIPT</div>
+                        <div style="font-size: 14px; font-weight: bold; margin-top: 5px;">⚠️ CANCELLED TRANSACTION ⚠️</div>
+                    </div>
+                    
+                    <!-- Store Information -->
+                    <div class="text-center" style="margin-bottom: 15px;">
+                        <div style="font-weight: bold; font-size: 14px;">
+                            <t t-esc="config.business_name or company.name"/>
+                        </div>
+                        <div style="font-size: 11px;">
+                            <t t-esc="config.business_address or company.street"/>
+                        </div>
+                        <div style="font-size: 11px; margin-top: 5px;">
+                            TIN: <t t-esc="config.tin or company.vat"/>
+                        </div>
+                        <t t-if="config.accreditation_number">
+                            <div style="font-size: 11px;">
+                                ACC#: <t t-esc="config.accreditation_number"/>
+                            </div>
+                        </t>
+                        <t t-if="config.min_number">
+                            <div style="font-size: 11px;">
+                                MIN: <t t-esc="config.min_number"/>
+                            </div>
+                        </t>
+                        <t t-if="config.serial_number">
+                            <div style="font-size: 11px;">
+                                SN: <t t-esc="config.serial_number"/>
+                            </div>
+                        </t>
+                    </div>
+                    
+                    <div style="border-top: 2px solid #000; border-bottom: 2px solid #000; padding: 10px 0; margin: 15px 0;">
+                        <!-- Void Information -->
+                        <table style="width: 100%; font-size: 11px;">
+                            <tr>
+                                <td style="width: 50%;">VOID #:</td>
+                                <td style="width: 50%; text-align: right; font-weight: bold;">
+                                    <t t-esc="void.void_number"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>VOID DATE:</td>
+                                <td style="text-align: right;">
+                                    <t t-esc="void.void_date.strftime('%Y-%m-%d %H:%M:%S')"/>
+                                </td>
+                            </tr>
+                            <tr style="height: 10px;"></tr>
+                            <tr>
+                                <td colspan="2" style="font-weight: bold; border-top: 1px dashed #000; padding-top: 5px;">
+                                    ORIGINAL TRANSACTION:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORDER #:</td>
+                                <td style="text-align: right;">
+                                    <t t-esc="void.original_order_name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RECEIPT #:</td>
+                                <td style="text-align: right;">
+                                    <t t-esc="void.bir_original_receipt_number"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>ORDER DATE:</td>
+                                <td style="text-align: right;">
+                                    <t t-esc="order.date_order.strftime('%Y-%m-%d %H:%M:%S')"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>AMOUNT:</td>
+                                <td style="text-align: right; font-weight: bold;">
+                                    <t t-esc="void.amount_voided" t-options="{'widget': 'monetary', 'display_currency': void.currency_id}"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Void Reason -->
+                    <div style="margin: 15px 0; padding: 10px; background-color: #f8f8f8; border: 1px solid #ddd;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">VOID REASON:</div>
+                        <div style="font-size: 11px;">
+                            <t t-esc="dict(void._fields['void_reason'].selection).get(void.void_reason)"/>
+                        </div>
+                        <t t-if="void.void_reason_details">
+                            <div style="font-size: 10px; margin-top: 5px; font-style: italic;">
+                                <t t-esc="void.void_reason_details"/>
+                            </div>
+                        </t>
+                    </div>
+                    
+                    <!-- Authorization -->
+                    <div style="border-top: 1px dashed #000; padding-top: 10px; margin-top: 15px;">
+                        <table style="width: 100%; font-size: 10px;">
+                            <tr>
+                                <td style="width: 50%;">VOIDED BY:</td>
+                                <td style="width: 50%; text-align: right;">
+                                    <t t-esc="void.voided_by_user_id.name"/>
+                                </td>
+                            </tr>
+                            <t t-if="void.supervisor_approval_id">
+                                <tr>
+                                    <td>APPROVED BY:</td>
+                                    <td style="text-align: right;">
+                                        <t t-esc="void.supervisor_approval_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>APPROVAL DATE:</td>
+                                    <td style="text-align: right;">
+                                        <t t-esc="void.supervisor_approval_date.strftime('%Y-%m-%d %H:%M:%S')"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr>
+                                <td>SESSION:</td>
+                                <td style="text-align: right;">
+                                    <t t-esc="void.session_id.name"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <!-- BIR Discount Info (if applicable) -->
+                    <t t-if="void.had_bir_discount">
+                        <div style="border-top: 1px dashed #000; padding-top: 10px; margin-top: 15px;">
+                            <div style="font-weight: bold; font-size: 11px; margin-bottom: 5px;">
+                                BIR DISCOUNT INFORMATION:
+                            </div>
+                            <table style="width: 100%; font-size: 10px;">
+                                <tr>
+                                    <td style="width: 50%;">Discount Type:</td>
+                                    <td style="width: 50%; text-align: right;">
+                                        <t t-esc="void.bir_discount_type_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Discount Amount:</td>
+                                    <td style="text-align: right;">
+                                        <t t-esc="void.bir_discount_amount" t-options="{'widget': 'monetary', 'display_currency': void.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                    
+                    <!-- BIR Compliance Notice -->
+                    <div style="border-top: 2px dashed #000; padding-top: 15px; margin-top: 20px; text-align: center;">
+                        <div style="font-size: 10px; font-weight: bold; margin-bottom: 5px;">
+                            BIR COMPLIANCE NOTICE
+                        </div>
+                        <div style="font-size: 9px; text-align: justify;">
+                            This void transaction is permanently recorded and excluded from sales totals
+                            per BIR regulations. This document serves as official proof of transaction
+                            cancellation for audit purposes.
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="border-top: 1px solid #000; padding-top: 10px; margin-top: 20px; text-align: center;">
+                        <div style="font-size: 9px;">
+                            <t t-esc="config.pos_software_name or 'Odoo POS'"/> v<t t-esc="config.pos_software_version or '18.0'"/>
+                        </div>
+                        <div style="font-size: 9px; margin-top: 5px;">
+                            Printed: <t t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+                        </div>
+                        <div style="font-size: 9px; margin-top: 10px;">
+                            THIS IS NOT A SALES INVOICE
+                        </div>
+                        <div style="font-size: 9px; font-weight: bold;">
+                            VOID TRANSACTION - NO SALE
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; text-align: center; page-break-after: always;">
+                        <div style="font-size: 10px;">*** END OF VOID RECEIPT ***</div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
+

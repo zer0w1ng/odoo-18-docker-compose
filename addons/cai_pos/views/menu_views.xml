@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        CHILD MENUS - Load last (after actions are defined)
+        These reference actions defined in other view files
+    -->
+    
+    <!-- BIR Configuration Menu -->
+    <menuitem id="menu_pos_bir_config" 
+              name="BIR Configurations"
+              parent="menu_pos_bir_root" 
+              action="action_bir_config" 
+              sequence="1"/>
+    
+    <!-- Discount Types Menu -->
+    <menuitem id="menu_bir_discount_type"
+              name="Discount Types"
+              parent="menu_pos_bir_root"
+              action="action_bir_discount_type"
+              sequence="25"/>
+    
+    <!-- BIR Reports Sub-menus -->
+    <menuitem id="menu_pos_xreading" 
+              name="X-Reading Reports"
+              parent="menu_pos_bir_reports" 
+              action="action_pos_xreading" 
+              sequence="1"/>
+    
+    <menuitem id="menu_pos_zreading" 
+              name="Z-Reading Reports"
+              parent="menu_pos_bir_reports" 
+              action="action_pos_zreading" 
+              sequence="2"/>
+    
+    <menuitem id="menu_pos_zreading_generate" 
+              name="Generate Z-Reading"
+              parent="menu_pos_bir_reports" 
+              action="action_generate_zreading_wizard" 
+              sequence="3"/>
+    
+    <menuitem id="menu_pos_esales" 
+              name="eSales Reports"
+              parent="menu_pos_bir_reports" 
+              action="action_pos_esales_report" 
+              sequence="4"/>
+    
+    <menuitem id="menu_pos_esales_generate" 
+              name="Generate eSales Report"
+              parent="menu_pos_bir_reports" 
+              action="action_generate_esales_wizard" 
+              sequence="5"/>
+    
+    <!-- Transactions Sub-menus -->
+    <menuitem id="menu_pos_void_transactions" 
+              name="Void Transactions"
+              parent="menu_pos_bir_transactions" 
+              action="action_pos_order_void" 
+              sequence="1"/>
+
+</odoo>

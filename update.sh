@@ -17,9 +17,22 @@ RESTART=0
 if (($REMOTE != 0)); then
     echo REMOTE
     # #############################################################
+<<<<<<< HEAD
     DB="demo-pay2"
     # MODULES="hr_dashboard"
     MODULES="ez_timekeeping,ez_timekeeping_payroll"
+=======
+    # DB="demo18"
+    # MODULES="hr_dashboard"
+    # MODULES="heldesk_mgmt_extend"
+
+    #DB="parkingbees"
+    #MODULES="parkingbees"
+
+    DB="westmead"
+    MODULES="ez_custom_westmead"
+
+>>>>>>> fd1e41417cfb6e9c55665f36f62276ba9c78e5b9
 
     #MODULES="ez_payroll_manager"
     # MODULES="account_ph_2306_2307"

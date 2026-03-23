@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- BIR Discount Type List View -->
+    <record id="view_bir_discount_type_tree" model="ir.ui.view">
+        <field name="name">bir.discount.type.list</field>
+        <field name="model">bir.discount.type</field>
+        <field name="arch" type="xml">
+            <list string="BIR Discount Types">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="discount_type"/>
+                <field name="discount_percent"/>
+                <field name="is_vat_exempt"/>
+                <field name="requires_id"/>
+                <field name="available_in_pos"/>
+                <field name="usage_count"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- BIR Discount Type Form View -->
+    <record id="view_bir_discount_type_form" model="ir.ui.view">
+        <field name="name">bir.discount.type.form</field>
+        <field name="model">bir.discount.type</field>
+        <field name="arch" type="xml">
+            <form string="BIR Discount Type">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Discount Name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="basic_info">
+                            <field name="code"/>
+                            <field name="discount_type"/>
+                            <field name="discount_percent"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group name="settings">
+                            <field name="requires_id"/>
+                            <field name="is_vat_exempt"/>
+                            <field name="bir_tax_id" invisible="not is_vat_exempt"/>
+                            <field name="available_in_pos"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+
+                    <group name="bir_info">
+                        <group>
+                            <field name="bir_code"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" placeholder="Internal notes about this discount type..."/>
+                        </page>
+                        <page string="Usage Guidelines">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <h4>Discount Type Guidelines</h4>
+                                    <p><strong>Senior Citizen (SC):</strong> 20% discount per RA 9994. Requires valid Senior Citizen ID. VAT-exempt.</p>
+                                    <p><strong>PWD:</strong> 20% discount per RA 10754. Requires valid PWD ID. VAT-exempt.</p>
+                                    <p><strong>Government:</strong> Sales to government agencies. Usually VAT-exempt.</p>
+                                    <p><strong>Promotional:</strong> Regular business promotions. Standard VAT applies.</p>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- BIR Discount Type Action -->
+    <record id="action_bir_discount_type" model="ir.actions.act_window">
+        <field name="name">BIR Discount Types</field>
+        <field name="res_model">bir.discount.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first BIR-compliant discount type
+            </p>
+            <p>
+                Configure discount types for Senior Citizens, PWD, and other BIR-compliant discounts.
+                These will appear in your POS interface for easy application.
+            </p>
+        </field>
+    </record>
+
+   
+
+</odoo>
+

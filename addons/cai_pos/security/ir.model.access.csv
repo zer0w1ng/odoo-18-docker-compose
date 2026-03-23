@@ -1,0 +1,26 @@
+id,name,model_id:id,group_id:id,perm_create,perm_read,perm_write,perm_unlink
+access_bir_discount_type_user,bir.discount.type user,model_bir_discount_type,point_of_sale.group_pos_user,1,1,1,0
+access_bir_discount_type_manager,bir.discount.type manager,model_bir_discount_type,point_of_sale.group_pos_manager,1,1,1,1
+access_bir_discount_type_everyone,bir.discount.type everyone,model_bir_discount_type,base.group_user,0,1,0,0
+access_bir_config_user,bir.config user,model_bir_config,point_of_sale.group_pos_user,0,1,0,0
+access_bir_config_manager,bir.config manager,model_bir_config,point_of_sale.group_pos_manager,1,1,1,1
+access_pos_order_void_user,pos.order.void user,model_pos_order_void,point_of_sale.group_pos_user,1,1,0,0
+access_pos_order_void_manager,pos.order.void manager,model_pos_order_void,point_of_sale.group_pos_manager,1,1,1,0
+access_pos_order_void_wizard_user,pos.order.void.wizard user,model_pos_order_void_wizard,point_of_sale.group_pos_user,1,1,1,1
+access_pos_order_void_wizard_manager,pos.order.void.wizard manager,model_pos_order_void_wizard,point_of_sale.group_pos_manager,1,1,1,1
+access_pos_xreading_user,pos.xreading user,model_pos_xreading,point_of_sale.group_pos_user,1,1,0,0
+access_pos_xreading_manager,pos.xreading manager,model_pos_xreading,point_of_sale.group_pos_manager,1,1,1,0
+access_pos_xreading_discount_line_user,pos.xreading.discount.line user,model_pos_xreading_discount_line,point_of_sale.group_pos_user,1,1,0,0
+access_pos_xreading_discount_line_manager,pos.xreading.discount.line manager,model_pos_xreading_discount_line,point_of_sale.group_pos_manager,1,1,1,0
+access_pos_xreading_payment_line_user,pos.xreading.payment.line user,model_pos_xreading_payment_line,point_of_sale.group_pos_user,1,1,0,0
+access_pos_xreading_payment_line_manager,pos.xreading.payment.line manager,model_pos_xreading_payment_line,point_of_sale.group_pos_manager,1,1,1,0
+access_pos_zreading_user,pos.zreading user,model_pos_zreading,point_of_sale.group_pos_user,1,1,1,0
+access_pos_zreading_manager,pos.zreading manager,model_pos_zreading,point_of_sale.group_pos_manager,1,1,1,1
+access_generate_zreading_wizard_user,generate.zreading.wizard user,model_generate_zreading_wizard,point_of_sale.group_pos_user,1,1,1,1
+access_generate_zreading_wizard_manager,generate.zreading.wizard manager,model_generate_zreading_wizard,point_of_sale.group_pos_manager,1,1,1,1
+access_pos_esales_report_user,pos.esales.report user,model_pos_esales_report,point_of_sale.group_pos_user,1,1,1,1
+access_pos_esales_report_manager,pos.esales.report manager,model_pos_esales_report,point_of_sale.group_pos_manager,1,1,1,1
+access_pos_esales_report_line_user,pos.esales.report.line user,model_pos_esales_report_line,point_of_sale.group_pos_user,1,1,1,1
+access_pos_esales_report_line_manager,pos.esales.report.line manager,model_pos_esales_report_line,point_of_sale.group_pos_manager,1,1,1,1
+access_generate_esales_wizard_user,generate.esales.wizard user,model_generate_esales_wizard,point_of_sale.group_pos_user,1,1,1,1
+access_generate_esales_wizard_manager,generate.esales.wizard manager,model_generate_esales_wizard,point_of_sale.group_pos_manager,1,1,1,1

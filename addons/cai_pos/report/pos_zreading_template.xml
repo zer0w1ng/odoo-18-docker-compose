@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paper Format for Receipt-style Z-Reading -->
+    <record id="paperformat_pos_zreading" model="report.paperformat">
+        <field name="name">POS Z-Reading (80mm Thermal)</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_height">297</field>
+        <field name="page_width">80</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">3</field>
+        <field name="margin_right">3</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <!-- Z-Reading Report Action -->
+    <record id="action_report_pos_zreading" model="ir.actions.report">
+        <field name="name">Z-Reading Report (BIR Format)</field>
+        <field name="model">pos.zreading</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">cai_pos.report_pos_zreading_document</field>
+        <field name="report_file">cai_pos.report_pos_zreading_document</field>
+        <field name="binding_model_id" ref="model_pos_zreading"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="cai_pos.paperformat_pos_zreading"/>
+    </record>
+
+    <!-- Z-Reading Receipt-Style Report Template -->
+    <template id="report_pos_zreading_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="zreading">
+                <t t-set="bir_config" t-value="zreading.bir_config_id or zreading.env['bir.config'].search([('company_id', '=', zreading.company_id.id), ('active', '=', True)], limit=1)"/>
+                <div class="page" style="font-family: 'Courier New', monospace; width: 80mm; margin: 0 auto; padding: 10mm; font-size: 10pt; line-height: 1.3;">
+                    
+                    <!-- Receipt Header -->
+                    <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 5mm; margin-bottom: 3mm;">
+                        <div style="font-size: 12pt; font-weight: bold;"><t t-esc="zreading.company_id.name"/></div>
+                        <div style="font-size: 9pt;">
+                            <t t-if="zreading.company_id.partner_id.street"><t t-esc="zreading.company_id.partner_id.street"/><br/></t>
+                            <t t-if="zreading.company_id.partner_id.street2"><t t-esc="zreading.company_id.partner_id.street2"/><br/></t>
+                            <t t-if="zreading.company_id.partner_id.city"><t t-esc="zreading.company_id.partner_id.city"/>, </t>
+                            <t t-if="zreading.company_id.partner_id.state_id"><t t-esc="zreading.company_id.partner_id.state_id.name"/></t>
+                            <t t-if="zreading.company_id.partner_id.zip"> <t t-esc="zreading.company_id.partner_id.zip"/></t>
+                            <br/>
+                            <t t-if="bir_config and bir_config.tin">TIN: <t t-esc="bir_config.tin"/><br/></t>
+                            <t t-if="bir_config and bir_config.accreditation_number">ACCR#: <t t-esc="bir_config.accreditation_number"/><br/></t>
+                            <t t-if="bir_config and bir_config.permit_number">PERMIT#: <t t-esc="bir_config.permit_number"/><br/></t>
+                            <t t-if="bir_config and bir_config.min_number">MIN: <t t-esc="bir_config.min_number"/><br/></t>
+                            <t t-if="bir_config and bir_config.serial_number">S/N: <t t-esc="bir_config.serial_number"/><br/></t>
+                        </div>
+                    </div>
+
+                    <!-- Z-Reading Title -->
+                    <div style="text-align: center; font-size: 14pt; font-weight: bold; margin: 5mm 0;">
+                        *** Z-READING ***
+                    </div>
+                    <div style="text-align: center; font-size: 9pt; margin-bottom: 3mm;">
+                        (DAILY SALES REPORT - RESETS COUNTERS)
+                    </div>
+
+                    <!-- Z-Reading Information -->
+                    <div style="margin-bottom: 3mm;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Z-COUNT:</span>
+                            <span style="font-weight: bold;"><t t-esc="zreading.reading_number"/></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>DATE:</span>
+                            <span><t t-esc="zreading.reading_date.strftime('%m/%d/%Y') if zreading.reading_date else ''"/></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>TIME:</span>
+                            <span><t t-esc="zreading.reading_datetime.strftime('%I:%M:%S %p') if zreading.reading_datetime else ''"/></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>GENERATED BY:</span>
+                            <span><t t-esc="zreading.user_id.name"/></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>SESSIONS:</span>
+                            <span><t t-esc="zreading.session_count"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+
+                    <!-- Transaction Summary -->
+                    <div style="margin-bottom: 3mm;">
+                        <div style="font-weight: bold; text-align: center; margin-bottom: 2mm;">TRANSACTION SUMMARY</div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>TRANS COUNT:</span>
+                            <span style="text-align: right;"><t t-esc="zreading.transaction_count"/></span>
+                        </div>
+                        <t t-if="zreading.voided_transaction_count > 0">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>VOIDED COUNT:</span>
+                                <span style="text-align: right;"><t t-esc="zreading.voided_transaction_count"/></span>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+
+                    <!-- Sales Breakdown -->
+                    <div style="margin-bottom: 3mm;">
+                        <div style="font-weight: bold; text-align: center; margin-bottom: 2mm;">SALES BREAKDOWN</div>
+                        
+                        <!-- Gross Sales -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>GROSS SALES</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.gross_sales"/></span>
+                        </div>
+                        
+                        <!-- Less: Discounts -->
+                        <t t-if="zreading.total_discounts > 0">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>LESS: DISCOUNTS</span>
+                                <span style="text-align: right;">(<t t-esc="'%.2f' % zreading.total_discounts"/>)</span>
+                            </div>
+                        </t>
+                        
+                        <div style="border-top: 1px solid #000; margin: 2mm 0;"></div>
+                        
+                        <!-- Net Sales -->
+                        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                            <span>NET SALES</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.net_sales"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+
+                    <!-- VAT Analysis -->
+                    <div style="margin-bottom: 3mm;">
+                        <div style="font-weight: bold; text-align: center; margin-bottom: 2mm;">VAT ANALYSIS</div>
+                        
+                        <!-- VATable Sales -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>VATABLE SALES</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.vatable_sales"/></span>
+                        </div>
+                        
+                        <!-- VAT Amount (12%) -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>VAT AMOUNT (12%)</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.vat_amount"/></span>
+                        </div>
+                        
+                        <div style="border-top: 1px solid #000; margin: 2mm 0;"></div>
+                        
+                        <!-- VATable + VAT -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>VAT SALES TOTAL</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % (zreading.vatable_sales + zreading.vat_amount)"/></span>
+                        </div>
+                        
+                        <!-- VAT Exempt -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>VAT-EXEMPT SALES</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.vat_exempt_sales"/></span>
+                        </div>
+                        
+                        <!-- Zero-Rated -->
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>ZERO-RATED SALES</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.zero_rated_sales"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+
+                    <!-- Payment Methods -->
+                    <div style="margin-bottom: 3mm;">
+                        <div style="font-weight: bold; text-align: center; margin-bottom: 2mm;">PAYMENT SUMMARY</div>
+                        
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>CASH</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.cash_payments"/></span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>CARD</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.card_payments"/></span>
+                        </div>
+                        
+                        <t t-if="zreading.other_payments > 0">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>OTHER</span>
+                                <span style="text-align: right;"><t t-esc="'%.2f' % zreading.other_payments"/></span>
+                            </div>
+                        </t>
+                        
+                        <div style="border-top: 1px solid #000; margin: 2mm 0;"></div>
+                        
+                        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                            <span>TOTAL PAYMENTS</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % (zreading.cash_payments + zreading.card_payments + zreading.other_payments)"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+
+                    <!-- Void Summary (if any) -->
+                    <t t-if="zreading.voided_amount > 0">
+                        <div style="margin-bottom: 3mm;">
+                            <div style="font-weight: bold; text-align: center; margin-bottom: 2mm; color: #d9534f;">VOID SUMMARY</div>
+                            
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>VOIDED TRANSACTIONS</span>
+                                <span style="text-align: right;"><t t-esc="zreading.voided_transaction_count"/></span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>VOIDED AMOUNT</span>
+                                <span style="text-align: right;"><t t-esc="'%.2f' % zreading.voided_amount"/></span>
+                            </div>
+                            
+                            <div style="font-size: 8pt; margin-top: 2mm; text-align: center; color: #777;">
+                                (Excluded from sales totals)
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+                    </t>
+
+                    <!-- Refund Summary (if any) -->
+                    <t t-if="zreading.refund_amount > 0">
+                        <div style="margin-bottom: 3mm;">
+                            <div style="font-weight: bold; text-align: center; margin-bottom: 2mm; color: #f0ad4e;">REFUND SUMMARY</div>
+                            
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>REFUND TRANSACTIONS</span>
+                                <span style="text-align: right;"><t t-esc="zreading.refund_count"/></span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>REFUND AMOUNT</span>
+                                <span style="text-align: right;"><t t-esc="'%.2f' % zreading.refund_amount"/></span>
+                            </div>
+                            
+                            <div style="font-size: 8pt; margin-top: 2mm; text-align: center; color: #777;">
+                                (Reduces net sales)
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+                    </t>
+
+                    <!-- Counter Totals (Accumulative) -->
+                    <div style="margin-bottom: 3mm;">
+                        <div style="font-weight: bold; text-align: center; margin-bottom: 2mm;">COUNTER TOTALS</div>
+                        
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>OLD GRAND TOTAL</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.old_grand_total"/></span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>NEW GRAND TOTAL</span>
+                            <span style="text-align: right;"><t t-esc="'%.2f' % zreading.new_grand_total"/></span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px dashed #000; margin: 3mm 0;"></div>
+
+                    <!-- Footer -->
+                    <div style="text-align: center; margin-top: 5mm; font-size: 9pt;">
+                        <div style="margin-bottom: 2mm; font-weight: bold;">*** END OF Z-READING ***</div>
+                        <div style="font-size: 8pt; margin-top: 3mm;">
+                            THIS DOCUMENT IS NOT VALID<br/>
+                            FOR CLAIM OF INPUT TAX<br/>
+                        </div>
+                        <div style="font-size: 8pt; margin-top: 3mm;">
+                            "THIS SERVES AS A SALES INVOICE"<br/>
+                        </div>
+                        <div style="font-size: 8pt; margin-top: 3mm;">
+                            BIR ACCREDITED CAS<br/>
+                            <t t-if="bir_config and bir_config.pos_software_name"><t t-esc="bir_config.pos_software_name"/><br/></t>
+                            <t t-if="bir_config and bir_config.pos_software_version">Version <t t-esc="bir_config.pos_software_version"/><br/></t>
+                            <t t-if="bir_config and bir_config.valid_from and bir_config.valid_until">
+                                Valid: <t t-esc="bir_config.valid_from.strftime('%m/%d/%Y')"/> to <t t-esc="bir_config.valid_until.strftime('%m/%d/%Y')"/><br/>
+                            </t>
+                        </div>
+                        <div style="font-size: 8pt; margin-top: 3mm;">
+                            Generated: <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%m/%d/%Y %I:%M:%S %p')"/>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

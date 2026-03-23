@@ -13,5 +13,7 @@ etc/odoo.conf
 */test/*
 *.pyc
 *.log
-ddons/hr_dashboard
+addons/hr_dashboard
 addons-odoo-apps-store/*
+addons/mpos_data
+addons/ez_license
