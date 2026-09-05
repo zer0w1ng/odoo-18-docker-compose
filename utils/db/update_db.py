@@ -1,7 +1,7 @@
 from pprint import pprint
 import xmlrpc.client
 
-def create_db(url, master_password, new_db_name, admin_password, demo_data=False, lang="en_US"):
+def create_db(url, master_password, new_db_name, admin_password, demo_data=False, lang="en_US", country_code="ph"):
     db_manager = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/db")
 
     try:
@@ -78,10 +78,12 @@ if __name__=="__main__":
 
     if 0:
         # create_db(url, master_password, new_db_name, admin_password, demo_data=True)
-        create_db(url, master_password, new_db_name, admin_password, demo_data=False)
+        create_db(url, master_password, new_db_name, admin_password, demo_data=True)
 
     if 1:
         # modules_to_install = ['contacts', 'muk_web_theme','web_view_leaflet_map_partner']
-        modules_to_install = ['web_view_leaflet_map','pd_gis']
+        #modules_to_install = ['web_view_leaflet_map','pd_gis']
+        # modules_to_install = ['contacts','muk_web_theme','om_account_accountant']
+        modules_to_install = ['account_ph_2306_2307_enhancement']
         install_modules(url, new_db_name, modules_to_install)
 

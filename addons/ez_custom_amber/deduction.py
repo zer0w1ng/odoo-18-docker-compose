@@ -41,28 +41,29 @@ class Phic(models.Model):
 class Sss(models.Model):
     _inherit = "hr.ph.sss"
 
+    # @api.model
+    # def create_sss_line(self, payslip, ptotal):
+    #     # check if second pay
+    #     year_month = payslip.year_month
+    #     ps_recs = self.env["hr.ph.payslip"].search([
+    #         ("employee_id", "=", payslip.employee_id.id),
+    #         ("year_month", "=", year_month),
+    #         ("date_to", "<", payslip.date_from),
+    #         ("id", "!=", payslip.id),
+    #     ])
+    #     _logger.info("create_sss_line_inh: %s", ps_recs)
+    #     if len(ps_recs) >= 1:
+    #         #2nd payslip for the month
+    #         _logger.info("create_sss_line_inh: create SSS")
+    #         return self.create_sss_line_amber(payslip, ptotal)
+    #     else:
+    #         _logger.info("create_sss_line_inh: return null")
+    #         return []
+
+
+    # def create_sss_line_amber(self, payslip, ptotal):
     @api.model
     def create_sss_line(self, payslip, ptotal):
-        # check if second pay
-        year_month = payslip.year_month
-        ps_recs = self.env["hr.ph.payslip"].search([
-            ("employee_id", "=", payslip.employee_id.id),
-            ("year_month", "=", year_month),
-            ("date_to", "<", payslip.date_from),
-            ("id", "!=", payslip.id),
-        ])
-        _logger.info("create_sss_line_inh: %s", ps_recs)
-        if len(ps_recs) >= 1:
-            #2nd payslip for the month
-            _logger.info("create_sss_line_inh: create SSS")
-            return self.create_sss_line_amber(payslip, ptotal)
-        else:
-            _logger.info("create_sss_line_inh: return null")
-            return []
-
-
-    @api.model
-    def create_sss_line_amber(self, payslip, ptotal):
         res0 = []
         if payslip.no_deductions:
             return res0
@@ -108,6 +109,8 @@ class Sss(models.Model):
             ee, er, ec = self.compute_sss_using_table(
                 payslip.basic_pay + pbasic,
                 payslip.payroll_id.date_to)
+
+        _logger.info("create_sss_line_amber: ee=%s er=%s ec=%s\npee=%s per=%s pec=%s", ee, er, ec, pee, per, pec)
 
         val1 = {
             'seq': 10,

@@ -16,6 +16,7 @@
     'depends': [
         'ez_leaves',
         'ez_timekeeping_payroll',
+        'ez_payroll_sss_2nd_pay',
     ],
     'init_xml': [],
     'data': [        
