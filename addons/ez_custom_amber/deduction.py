@@ -63,7 +63,7 @@ class Sss(models.Model):
 
     # def create_sss_line_amber(self, payslip, ptotal):
     @api.model
-    def create_sss_line(self, payslip, ptotal):
+    def create_sss_line_amber(self, payslip, ptotal):
         res0 = []
         if payslip.no_deductions:
             return res0
